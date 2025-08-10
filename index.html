@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>السيرة الذاتية</title>
+<style>
+:root{
+  --site-bg: #dce6f2; /* خلفية الموقع */
+  --accent: #3a6ea5; /* لون الشريط الجانبي */
+}
+
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: var(--site-bg);
+}
+
+/* شريط الأدوات */
+.toolbar{
+  text-align:center;
+  padding:15px;
+}
+button{
+  background: var(--accent);
+  color:#fff;
+  border:none;
+  padding:10px 20px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:16px;
+}
+button:hover{ opacity:0.9; }
+
+/* غلاف الصفحة */
+.sheet-wrap{
+  display:flex;
+  justify-content:center;
+  padding:20px;
+}
+
+/* ورقة السيرة الذاتية */
+.sheet{
+  width:210mm;
+  min-height:297mm;
+  background:#fff;
+  display:flex;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+/* الشريط الجانبي */
+.sheet .bar{
+  width:70mm;
+  background:var(--accent);
+  color:#fff;
+  padding:20px;
+  box-sizing:border-box;
+}
+.sheet .bar h2{ margin-top:0; }
+
+/* المحتوى */
+.sheet .content{
+  flex:1;
+  padding:20px;
+}
+
+/* وضع الطباعة */
+.print-mode body,
+.print-mode .sheet-wrap{
+  background:#fff !important;
+}
+.print-mode .toolbar{ display:none; }
+.print-mode .sheet{
+  box-shadow:none;
+  border-radius:0;
+}
+
+/* إعدادات الطباعة */
+@media print{
+  body{ background:#fff !important; margin:0; }
+  .toolbar{ display:none; }
+  .sheet-wrap{ padding:0; }
+  .sheet{
+    width:210mm !important;
+    min-height:297mm !important;
+    border-radius:0;
+    box-shadow:none;
+  }
+  @page{ size:A4; margin:0; }
+}
+</style>
+</head>
+<body>
+
+<!-- زر تصدير PDF -->
+<div class="toolbar no-print">
+  <button id="btnPrintPDF">تصدير PDF</button>
+</div>
+
+<!-- محتوى السيرة -->
+<div class="sheet-wrap">
+  <div class="sheet">
+    <div class="bar">
+      <h2>الاسم الكامل</h2>
+      <p>الهاتف: 0000000</p>
+      <p>البريد: example@email.com</p>
+      <h3>المهارات</h3>
+      <ul>
+        <li>مهارة 1</li>
+        <li>مهارة 2</li>
+      </ul>
+    </div>
+    <div class="content">
+      <h1>المسمى الوظيفي</h1>
+      <p>ملخص شخصي قصير يصف الخبرة والمهارات...</p>
+      <h3>الخبرات</h3>
+      <p>وصف الخبرة العملية...</p>
+      <h3>التعليم</h3>
+      <p>تفاصيل التعليم والمؤهلات...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function enterPrintMode(){ document.body.classList.add('print-mode'); }
+function exitPrintMode(){ document.body.classList.remove('print-mode'); }
+
+document.getElementById('btnPrintPDF').addEventListener('click', async ()=>{
+  enterPrintMode();
+  await new Promise(r=>setTimeout(r,60)); // مهلة لتطبيق CSS
+  window.print();
+  setTimeout(exitPrintMode, 1000); // العودة للوضع العادي
+});
+</script>
+
+</body>
+</html>
