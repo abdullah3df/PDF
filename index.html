@@ -3,112 +3,69 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>صانع سيرة ذاتية — معاينة فورية وتصدير PDF</title>
+<title>صانع سيرة ذاتية — معاينة يدوية وتصدير PDF</title>
 
 <style>
-/* ===== المتغيرات ===== */
 :root{
-  /* ألوان واجهة الموقع (الأزرار والهيدر) — منفصلة عن ألوان السيرة */
-  --ui-brand:#2563eb;      /* أزرق أزرار الواجهة */
-  --ui-brand-2:#1e3a8a;
-  --site-bg:#dce6f2;       /* خلفية الموقع (أزرق باهت) */
+  /* ألوان واجهة الموقع (الأزرار والهيدر) */
+  --ui-brand:#2563eb; --ui-brand-2:#1e3a8a;
+  --site-bg:#dce6f2; /* خلفية الموقع */
 
-  /* ألوان صفحة السيرة (الورقة نفسها) */
-  --accent:#3a6ea5;        /* لون الشريط الجانبي */
-  --text:#0b1220;          /* لون نص الورقة */
-  --muted:#475569;
-  --chip:#1f2937;
+  /* ألوان ورقة السيرة (داخل الورقة) */
+  --accent:#3a6ea5;  /* لون الشريط الجانبي */
+  --text:#0b1220; --muted:#475569; --chip:#1f2937;
 
   /* قياسات */
-  --bar-w:58mm;            /* عرض الشريط الجانبي (مناسب للطباعة) */
-  --sheet-w:210mm;
-  --sheet-h:297mm;
+  --sheet-w:210mm; --sheet-h:297mm;
+  --bar-w:56mm; /* شريط جانبي مناسب، غيّره لـ 50–60mm حسب ذوقك */
   --radius:14px;
 }
 
-/* ===== أساسيات الموقع ===== */
 *{box-sizing:border-box}
 html,body{margin:0}
 body{
   font-family:"Tajawal",system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:var(--site-bg);
-  color:#0b1220;
+  background:var(--site-bg); color:#0b1220;
 }
 
-/* هيدر بسيط */
-.header{
-  max-width:980px;margin:16px auto 8px;padding:0 12px;
-  display:flex;align-items:center;gap:12px;justify-content:space-between;
-}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800}
-.badge{padding:6px 10px;border-radius:999px;background:#fff;border:1px solid rgba(2,6,23,.12);font-size:12px;color:#334155}
+/* رأس وأزرار الواجهة (ألوانها منفصلة عن الورقة) */
+.header{max-width:980px;margin:16px auto 8px;padding:0 12px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.brand{font-weight:800;display:flex;align-items:center;gap:8px}
+.badge{font-size:12px;background:#fff;border:1px solid rgba(2,6,23,.12);padding:6px 10px;border-radius:999px;color:#334155}
+.toolbar{max-width:980px;margin:0 auto 12px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn{appearance:none;border:none;cursor:pointer;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--ui-brand),var(--ui-brand-2));color:#fff;font-weight:800;box-shadow:0 6px 14px rgba(0,0,0,.18)}
+.btn.ghost{background:#fff;color:#0b1220;border:1px solid rgba(2,6,23,.15);box-shadow:none;font-weight:700}
 
-/* شريط الأدوات */
-.toolbar{
-  max-width:980px;margin:0 auto 10px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center
-}
-.btn{
-  appearance:none;border:none;cursor:pointer;
-  padding:10px 14px;border-radius:10px;
-  background:linear-gradient(135deg,var(--ui-brand),var(--ui-brand-2));
-  color:#fff;font-weight:800;box-shadow:0 6px 14px rgba(0,0,0,.18)
-}
-.btn.ghost{background:#ffffff;color:#0b1220;border:1px solid rgba(2,6,23,.15);box-shadow:none;font-weight:700}
-.input,textarea,select{
-  width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(2,6,23,.15);
-  background:#fff;color:#0b1220;outline:none
-}
+/* لوحة الإدخال */
+.editor{max-width:980px;margin:0 auto 14px;background:#fff;border:1px solid rgba(2,6,23,.12);border-radius:14px;padding:12px}
 label{font-weight:700;font-size:13px;margin-bottom:6px;display:block}
-.help{font-size:12px;color:#64748b;margin:4px 2px 8px}
-
-/* لوحة التعديل */
-.editor{
-  max-width:980px;margin:0 auto 14px;padding:12px;background:#fff;border-radius:14px;border:1px solid rgba(2,6,23,.12)
-}
+.input,textarea,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(2,6,23,.15);background:#fff;color:#0b1220;outline:none}
+.help{font-size:12px;color:#64748b;margin:4px 2px 10px}
 .grid{display:grid;gap:12px}
 .two{grid-template-columns:1fr 1fr}
 .three{grid-template-columns:repeat(3,1fr)}
 @media (max-width:860px){.two,.three{grid-template-columns:1fr}}
 
-/* ===== معاينة الورقة ===== */
-.sheet-wrap{
-  max-width:calc(var(--sheet-w) + 32px);
-  margin:0 auto 40px;padding:16px;border-radius:16px;
-  background:#ffffffb3;border:1px solid rgba(2,6,23,.08)
-}
-.sheet{
-  width:var(--sheet-w);min-height:var(--sheet-h);
-  background:#fff;position:relative;border-radius:var(--radius);
-  box-shadow:0 24px 60px rgba(0,0,0,.22);overflow:hidden;
-  color:var(--text)
-}
+/* المعاينة */
+.sheet-wrap{max-width:calc(var(--sheet-w) + 32px);margin:0 auto 40px;padding:16px;border-radius:16px;background:#ffffffb3;border:1px solid rgba(2,6,23,.08)}
+.sheet{width:var(--sheet-w);min-height:var(--sheet-h);background:#fff;position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.22);color:var(--text)}
 
-/* الشريط الجانبي كعنصر حقيقي */
-.sheet.with-sidebar .bar{
-  position:absolute;inset:0 0 0 auto;width:var(--bar-w);background:var(--accent);
-  border-radius:0 var(--radius) var(--radius) 0;color:#fff;padding:18mm 12mm 18mm 12mm
-}
+/* الشريط الجانبي الحقيقي */
+.sheet.with-sidebar .bar{position:absolute;top:0;bottom:0;right:0;width:var(--bar-w);background:var(--accent);color:#fff;border-radius:0 var(--radius) var(--radius) 0}
 [dir="rtl"] .sheet.with-sidebar .bar{left:0;right:auto;border-radius:var(--radius) 0 0 var(--radius)}
 
-/* محتوى الورقة */
-.content{position:relative;z-index:2;padding:18mm 18mm}
-.sheet.with-sidebar .content{padding-inline-end:calc(18mm + var(--bar-w) + 6mm)} /* اترك مكان للشريط */
-h1,h2,h3{margin:0 0 8px}
-h1{font-size:26px}
-h2{font-size:20px}
-h3{font-size:16px;border-bottom:2px solid var(--chip);display:inline-block;padding-bottom:2px;margin-top:14px}
+.content{position:relative;z-index:2;padding:18mm}
+.sheet.with-sidebar .content{padding-inline-end:calc(18mm + var(--bar-w) + 6mm)}
+h1,h2,h3{margin:0 0 8px} h1{font-size:26px} h2{font-size:20px} h3{font-size:16px;border-bottom:2px solid var(--chip);display:inline-block;padding-bottom:2px;margin-top:14px}
 .meta{display:flex;gap:12px;flex-wrap:wrap;color:#334155}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .chip{border:1px solid var(--chip);border-radius:999px;padding:6px 10px;font-size:12px}
 
-/* صندوق جانبي فوق الشريط */
-.side-card{
-  position:absolute;z-index:3;top:18mm;inset-inline-end:12mm;width:calc(var(--bar-w) - 24mm);
-  background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;color:#0b1220
-}
+/* بطاقة فوق الشريط (تعرض مهارات/لغات/تواصل) */
+.side-card{position:absolute;z-index:3;top:18mm;inset-inline-end:12mm;width:calc(var(--bar-w) - 24mm);background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;color:#0b1220}
 [dir="rtl"] .side-card{inset-inline-start:12mm;inset-inline-end:auto}
 
-/* ===== وضع الطباعة الدقيق ===== */
+/* وضع الطباعة */
 .print-mode .header,.print-mode .toolbar,.print-mode .editor{display:none!important}
 .print-mode body,.print-mode .sheet-wrap{background:#fff!important}
 .print-mode .sheet{box-shadow:none;border-radius:0}
@@ -120,96 +77,88 @@ h3{font-size:16px;border-bottom:2px solid var(--chip);display:inline-block;paddi
   @page{size:A4;margin:0}
 }
 
-/* تحسين موبايل */
-@media (max-width:480px){
-  :root{--bar-w:44mm}
+/* موبايل */
+@media (max-width:520px){
+  :root{--bar-w:48mm}
   .sheet.with-sidebar .content{padding:14mm}
-  .sheet.with-sidebar .side-card{display:none} /* وفر مساحة على الشاشات الصغيرة */
+  .side-card{display:none}
 }
 </style>
 </head>
 <body>
 
-<!-- ===== رأس الصفحة ===== -->
+<!-- واجهة الموقع (ألوان منفصلة) -->
 <div class="header">
   <div class="brand">📄 <span>صانع سيرة ذاتية</span></div>
-  <span class="badge">المعاينة فورية • PDF نظيف</span>
+  <span class="badge">معاينة يدوية • PDF نظيف</span>
 </div>
-
-<!-- ===== شريط الأدوات (أزرار الموقع بألوان واجهة مستقلة) ===== -->
 <div class="toolbar">
+  <button class="btn" id="btnPreview">معاينة</button>
   <button class="btn" id="btnPrint">تصدير PDF</button>
-  <button class="btn ghost" id="btnToggleEditor">إظهار / إخفاء التعديل</button>
+  <button class="btn ghost" id="btnToggle">إظهار / إخفاء التعديل</button>
 </div>
 
-<!-- ===== لوحة التعديل (مع تلميحات واضحة) ===== -->
+<!-- نموذج الإدخال (بتلميحات واضحة) -->
 <div class="editor" id="editor">
   <div class="grid two">
     <div>
       <label>الاسم الكامل</label>
-      <input id="i_name" class="input" placeholder="اكتب اسمك الثلاثي أو الرباعي" />
-      <div class="help">مثال: عبد الله محمد الحكم</div>
+      <input id="i_name" class="input" placeholder="اكتب اسمك الثلاثي أو الرباعي (مثال: عبد الله محمد الحكم)" />
+      <div class="help">سيظهر أعلى الورقة بحجم كبير.</div>
     </div>
     <div>
       <label>المسمى الوظيفي</label>
-      <input id="i_title" class="input" placeholder="عرّف دورك بإيجاز" />
-      <div class="help">مثال: مطوّر واجهات أمامية | React</div>
+      <input id="i_title" class="input" placeholder="مثال: مطوّر واجهات أمامية | React" />
+      <div class="help">يفضّل أن يكون مختصرًا ووصفيًا.</div>
     </div>
   </div>
 
   <div class="grid three">
     <div>
       <label>البريد</label>
-      <input id="i_email" class="input" placeholder="بريد احترافي يظهر في السيرة" />
-      <div class="help">مثال: name.lastname@gmail.com</div>
+      <input id="i_email" class="input" placeholder="استخدم بريدًا احترافيًا (name.lastname@gmail.com)" />
     </div>
     <div>
       <label>الهاتف</label>
-      <input id="i_phone" class="input" placeholder="رقم مع رمز الدولة" />
-      <div class="help">مثال: +49 151 2345678</div>
+      <input id="i_phone" class="input" placeholder="رقم مع رمز الدولة (مثال: +49 151 2345678)" />
     </div>
     <div>
       <label>المدينة</label>
-      <input id="i_city" class="input" placeholder="مكان الإقامة الحالي" />
-      <div class="help">مثال: Berlin, DE</div>
+      <input id="i_city" class="input" placeholder="مثال: Berlin, DE" />
     </div>
   </div>
 
   <div>
     <label>الرابط (اختياري)</label>
-    <input id="i_site" class="input" placeholder="LinkedIn / موقع شخصي" />
-    <div class="help">مثال: linkedin.com/in/username</div>
+    <input id="i_site" class="input" placeholder="LinkedIn أو موقع شخصي (مثال: linkedin.com/in/username)" />
   </div>
 
   <div>
     <label>الملخص المهني</label>
-    <textarea id="i_summary" rows="3" class="input" placeholder="3–4 جمل توضّح خبرتك، أهم إنجاز، وما تبحث عنه"></textarea>
-    <div class="help">نصيحة: اكتب بلغة بسيطة ونتائج ملموسة.</div>
+    <textarea id="i_summary" rows="3" class="input" placeholder="3–4 جمل: سنوات خبرة + مجال + إنجاز ملحوظ + ما تبحث عنه"></textarea>
   </div>
 
   <div class="grid two">
     <div>
       <label>المهارات (افصل بفواصل)</label>
       <input id="i_skills" class="input" placeholder="JavaScript, React, CSS, Git" />
-      <div class="help">رتّب من الأقوى إلى الأضعف.</div>
+      <div class="help">رتّب من الأقوى للأقل.</div>
     </div>
     <div>
-      <label>اللغات (افصل بفواصل)</label>
+      <label>اللغات (افصل بفواصل + مستوى)</label>
       <input id="i_langs" class="input" placeholder="العربية (أم)، الإنجليزية B2" />
-      <div class="help">اذكر المستوى إن أمكن.</div>
     </div>
   </div>
 
   <div class="grid two">
     <div>
       <label>الخبرات — HTML بسيط</label>
-      <textarea id="i_exp" rows="5" class="input" placeholder="<p><strong>مسمى الوظيفة</strong> — الشركة <span style='color:#64748b'>2022–الآن</span><br>إنجازات مختصرة بنقاط.</p>"></textarea>
-      <div class="help">يمكنك نسخ فقرات؛ يُسمح بـ &lt;strong&gt; و &lt;br&gt; و &lt;p&gt;.</div>
+      <textarea id="i_exp" rows="5" class="input" placeholder="<p><strong>المسمى</strong> — الشركة <span style='color:#64748b'>2022–الآن</span><br>• إنجاز مختصر<br>• مسؤولية رئيسية</p>"></textarea>
+      <div class="help">يسمح بـ &lt;p&gt; و &lt;strong&gt; و &lt;br&gt; والنقاط.</div>
     </div>
     <div>
       <label>التعليم — HTML بسيط</label>
       <textarea id="i_edu" rows="5" class="input" placeholder="<p><strong>بكالوريوس علوم الحاسوب</strong> — جامعة X <span style='color:#64748b'>2021</span><br>مشروع تخرج / معدل.</p>"></textarea>
-      <div class="help">أضف أكثر من فقرة لو أردت.</div>
     </div>
   </div>
 
@@ -220,35 +169,28 @@ h3{font-size:16px;border-bottom:2px solid var(--chip);display:inline-block;paddi
         <label><input type="radio" name="tpl" value="sidebar" checked> شريط جانبي</label>
         <label><input type="radio" name="tpl" value="classic"> بدون شريط</label>
       </div>
-      <div class="help">بدّل بين القالبين فورًا.</div>
+      <div class="help">اختر شريط أو لا. حجم الشريط مضبوط حتى لا يأكل الصفحة.</div>
     </div>
     <div>
-      <label>ألوان السيرة</label>
+      <label>ألوان ورقة السيرة/واجهة الموقع</label>
       <div class="grid two">
         <div>
           <input id="i_accent" type="color" class="input" value="#3a6ea5" />
-          <div class="help">لون الشريط الجانبي (داخل الورقة).</div>
+          <div class="help">لون الشريط (داخل الورقة).</div>
         </div>
         <div>
           <input id="i_ui" type="color" class="input" value="#2563eb" />
-          <div class="help">لون أزرار الموقع (خارج الورقة).</div>
+          <div class="help">لون الأزرار (خارج الورقة).</div>
         </div>
       </div>
     </div>
   </div>
-
-  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
-    <button class="btn" id="btnSave">حفظ</button>
-    <button class="btn ghost" id="btnLoad">استرجاع</button>
-    <button class="btn ghost" id="btnClear">حذف الكل</button>
-  </div>
 </div>
 
-<!-- ===== المعاينة ===== -->
+<!-- المعاينة -->
 <div class="sheet-wrap">
   <div class="sheet with-sidebar" id="sheet">
     <div class="bar" id="bar">
-      <!-- البطاقة الجانبية فوق الشريط (تظهر على الشاشات الكبيرة) -->
       <div class="side-card" id="sideCard">
         <h3 style="margin-top:0">التواصل</h3>
         <div id="v_contact" style="font-size:13px;line-height:1.6"></div>
@@ -258,7 +200,6 @@ h3{font-size:16px;border-bottom:2px solid var(--chip);display:inline-block;paddi
         <div id="v_langs_side" class="chips"></div>
       </div>
     </div>
-
     <div class="content">
       <h1 id="v_name">الاسم الكامل</h1>
       <div class="meta" id="v_meta"></div>
@@ -276,70 +217,64 @@ h3{font-size:16px;border-bottom:2px solid var(--chip);display:inline-block;paddi
 </div>
 
 <script>
-/* ===== حفظ تلقائي ===== */
-const KEY='cv_onefile_v1';
-const $=s=>document.querySelector(s);
-const $$=s=>Array.from(document.querySelectorAll(s));
+const $=s=>document.querySelector(s); const $$=s=>Array.from(document.querySelectorAll(s));
+const KEY='cv_manual_preview_v1';
 
-function chipify(listStr){
-  const wrap=document.createDocumentFragment();
-  listStr.split(/,|،/).map(s=>s.trim()).filter(Boolean).forEach(txt=>{
-    const sp=document.createElement('span'); sp.className='chip'; sp.textContent=txt; wrap.appendChild(sp);
-  });
-  return wrap;
+/* تحويل قائمة نصية إلى Chips */
+function chips(str){
+  const frag=document.createDocumentFragment();
+  str.split(/,|،/).map(s=>s.trim()).filter(Boolean).forEach(t=>{
+    const sp=document.createElement('span'); sp.className='chip'; sp.textContent=t; frag.appendChild(sp);
+  }); return frag;
 }
-function setText(id,txt){ const el=document.getElementById(id); if(el) el.textContent=txt||''; }
-function setHTML(id,html){ const el=document.getElementById(id); if(el) el.innerHTML=html||''; }
 
-function render(){
-  // ألوان منفصلة
+/* المعاينة اليدوية فقط عند الضغط على زر "معاينة" */
+function preview(){
+  // فصل الألوان: ورقة السيرة
   document.documentElement.style.setProperty('--accent', $('#i_accent').value || '#3a6ea5');
+  // ألوان الواجهة
   document.documentElement.style.setProperty('--ui-brand', $('#i_ui').value || '#2563eb');
 
+  // تبديل القالب
+  const tpl = document.querySelector('input[name="tpl"]:checked')?.value || 'sidebar';
+  const sheet = $('#sheet');
+  if(tpl==='sidebar') sheet.classList.add('with-sidebar'); else sheet.classList.remove('with-sidebar');
+
   // اسم + ميتا
-  setText('v_name',$('#i_name').value || 'الاسم الكامل');
-  const metaItems=[];
-  if($('#i_title').value) metaItems.push($('#i_title').value);
-  if($('#i_email').value) metaItems.push($('#i_email').value);
-  if($('#i_phone').value) metaItems.push($('#i_phone').value);
-  if($('#i_city').value)  metaItems.push($('#i_city').value);
-  if($('#i_site').value)  metaItems.push($('#i_site').value);
-  $('#v_meta').textContent = metaItems.join(' • ');
+  $('#v_name').textContent = $('#i_name').value || 'الاسم الكامل';
+  const meta=[];
+  if($('#i_title').value) meta.push($('#i_title').value);
+  if($('#i_email').value) meta.push($('#i_email').value);
+  if($('#i_phone').value) meta.push($('#i_phone').value);
+  if($('#i_city').value)  meta.push($('#i_city').value);
+  if($('#i_site').value)  meta.push($('#i_site').value);
+  $('#v_meta').textContent = meta.join(' • ');
 
   // ملخص
-  setText('v_summary',$('#i_summary').value);
+  $('#v_summary').textContent = $('#i_summary').value || '';
 
-  // خبرات/تعليم (يسمح بـ HTML بسيط)
-  setHTML('v_exp',$('#i_exp').value);
-  setHTML('v_edu',$('#i_edu').value);
+  // خبرات/تعليم (HTML بسيط)
+  $('#v_exp').innerHTML = $('#i_exp').value || '';
+  $('#v_edu').innerHTML = $('#i_edu').value || '';
 
-  // بطاقة الشريط: تواصل/مهارات/لغات
-  const contactHTML = [
-    $('#i_email').value, $('#i_phone').value, $('#i_city').value, $('#i_site').value
-  ].filter(Boolean).join('<br>');
-  setHTML('v_contact',contactHTML);
+  // البطاقة الجانبية: تواصل/مهارات/لغات
+  const contactHTML = [$('#i_email').value,$('#i_phone').value,$('#i_city').value,$('#i_site').value]
+    .filter(Boolean).join('<br>');
+  $('#v_contact').innerHTML = contactHTML || '';
 
-  const skillsWrap=$('#v_skills_side'); skillsWrap.innerHTML=''; skillsWrap.appendChild(chipify($('#i_skills').value));
-  const langsWrap=$('#v_langs_side'); langsWrap.innerHTML='';  langsWrap.appendChild(chipify($('#i_langs').value));
-
-  // تبديل القالب
-  const sheet=$('#sheet');
-  const tplVal=$('input[name="tpl"]:checked').value;
-  if(tplVal==='sidebar'){
-    sheet.classList.add('with-sidebar');
-  }else{
-    sheet.classList.remove('with-sidebar');
-  }
+  const s=$('#v_skills_side'); s.innerHTML=''; s.appendChild(chips($('#i_skills').value||''));
+  const l=$('#v_langs_side'); l.innerHTML=''; l.appendChild(chips($('#i_langs').value||''));
 }
 
+/* حفظ/استرجاع (اختياري لكنه مفيد) */
 function save(){
   const data={
-    name:$('#i_name').value,title:$('#i_title').value,email:$('#i_email').value,phone:$('#i_phone').value,city:$('#i_city').value,site:$('#i_site').value,
-    summary:$('#i_summary').value,skills:$('#i_skills').value,langs:$('#i_langs').value,exp:$('#i_exp').value,edu:$('#i_edu').value,
-    accent:$('#i_accent').value, ui:$('#i_ui').value, tpl: $('input[name="tpl"]:checked').value
+    name:$('#i_name').value,title:$('#i_title').value,email:$('#i_email').value,phone:$('#i_phone').value,
+    city:$('#i_city').value,site:$('#i_site').value,summary:$('#i_summary').value,
+    skills:$('#i_skills').value,langs:$('#i_langs').value,exp:$('#i_exp').value,edu:$('#i_edu').value,
+    accent:$('#i_accent').value,ui:$('#i_ui').value,tpl:document.querySelector('input[name="tpl"]:checked')?.value||'sidebar'
   };
   localStorage.setItem(KEY, JSON.stringify(data));
-  render();
   alert('تم الحفظ.');
 }
 function load(){
@@ -354,41 +289,29 @@ function load(){
     $('#i_langs').value=d.langs||''; $('#i_exp').value=d.exp||''; $('#i_edu').value=d.edu||'';
     $('#i_accent').value=d.accent||'#3a6ea5'; $('#i_ui').value=d.ui||'#2563eb';
     if(d.tpl){ $$('input[name="tpl"]').forEach(r=>r.checked=(r.value===d.tpl)); }
-    render(); alert('تم الاسترجاع.');
-  }catch(e){ alert('تعذّر الاسترجاع.'); }
-}
-function clearAll(){
-  if(!confirm('سيتم حذف جميع البيانات. هل أنت متأكد؟')) return;
-  localStorage.removeItem(KEY);
-  $$('input,textarea').forEach(el=>{ if(el.id.startsWith('i_')) el.value=''; });
-  $$('input[name="tpl"]').forEach(r=> r.checked=(r.value==='sidebar'));
-  render();
+    alert('تم الاسترجاع.'); 
+  }catch{ alert('تعذّر الاسترجاع.'); }
 }
 
-/* أحداث */
-$('#btnSave').onclick=save;
-$('#btnLoad').onclick=load;
-$('#btnClear').onclick=clearAll;
-$('#btnToggleEditor').onclick=()=>{ const ed=$('#editor'); ed.style.display=(ed.style.display==='none'?'block':'none'); };
-['#i_name','#i_title','#i_email','#i_phone','#i_city','#i_site','#i_summary','#i_skills','#i_langs','#i_exp','#i_edu','#i_accent','#i_ui']
-  .forEach(id=>$(id).addEventListener('input',render));
-$$('input[name="tpl"]').forEach(r=> r.addEventListener('change',render));
-
-/* طباعة PDF عالية الجودة */
+/* طباعة PDF دقيقة */
 function enterPrint(){ document.body.classList.add('print-mode'); }
 function exitPrint(){ document.body.classList.remove('print-mode'); }
-$('#btnPrint').addEventListener('click', async ()=>{
-  enterPrint();
-  await new Promise(r=>setTimeout(r,60));
-  window.print();
-  setTimeout(exitPrint, 800);
+function printPDF(){ enterPrint(); setTimeout(()=>{ window.print(); setTimeout(exitPrint,800); },60); }
+
+/* أزرار */
+$('#btnPreview').addEventListener('click', preview);
+$('#btnPrint').addEventListener('click', printPDF);
+$('#btnToggle').addEventListener('click', ()=>{ const ed=$('#editor'); ed.style.display = (ed.style.display==='none'?'block':'none'); });
+
+/* اختصار: Ctrl/Cmd + P ينصح بالمعاينة قبل الطباعة */
+window.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='p'){ if(confirm('هل تريد تحديث المعاينة قبل الطباعة؟')) preview(); }
 });
 
-/* بداية: حمّل إن وُجد وحسّن المعاينة */
+/* تهيئة مبدئية: حمّل إن وجد ثم اعرض معاينة أولى */
 (function init(){
   const raw=localStorage.getItem(KEY);
-  if(raw){ try{
-    const d=JSON.parse(raw);
+  if(raw){ try{ const d=JSON.parse(raw);
     $('#i_name').value=d.name||''; $('#i_title').value=d.title||'';
     $('#i_email').value=d.email||''; $('#i_phone').value=d.phone||'';
     $('#i_city').value=d.city||''; $('#i_site').value=d.site||'';
@@ -396,10 +319,9 @@ $('#btnPrint').addEventListener('click', async ()=>{
     $('#i_langs').value=d.langs||''; $('#i_exp').value=d.exp||''; $('#i_edu').value=d.edu||'';
     $('#i_accent').value=d.accent||'#3a6ea5'; $('#i_ui').value=d.ui||'#2563eb';
     if(d.tpl){ $$('input[name="tpl"]').forEach(r=>r.checked=(r.value===d.tpl)); }
-  }catch(_){/* تجاهل */} }
-  render();
+  }catch{} }
+  preview(); // معاينة أولى بالتخطيط الافتراضي
 })();
 </script>
-
 </body>
 </html>
