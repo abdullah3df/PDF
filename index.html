@@ -1,327 +1,496 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>صانع سيرة ذاتية — معاينة يدوية وتصدير PDF</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>خدمات PDF & CV — موقع متكامل بملف واحد</title>
+  <meta name="description" content="موقع يقدم أدوات PDF (دمج، تقسيم، صور→PDF) ومنشئ سيرة ذاتية مع تصدير PDF — يعمل بالكامل داخل المتصفح.">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #121a2b;
+      --muted: #93a4c7;
+      --text: #e9eefb;
+      --brand: #3aa9ff;
+      --brand-2:#7ee787;
+      --danger:#ff6b6b;
+      --accent:#ffd166;
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#0d1426 35%,#0a0f1d 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Noto Sans Arabic",Tahoma,Arial,sans-serif}
+    a{color:var(--brand)}
+    .container{max-width:1180px;margin:auto;padding:24px}
+    .nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800}
+    .logo-badge{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,var(--brand),#6dd3ff 40%,#0049ff)}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab-btn{border:1px solid #223050;background:#0e1626;color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;transition:0.2s}
+    .tab-btn[aria-selected="true"], .tab-btn:hover{background:linear-gradient(180deg,#12213b,#0e1626);border-color:#2a3a5d;box-shadow:0 0 0 2px rgb(58 169 255 / .18) inset}.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:18px}
+@media (max-width: 980px){.grid{grid-template-columns:1fr}}
 
-<style>
-:root{
-  /* ألوان واجهة الموقع (الأزرار والهيدر) */
-  --ui-brand:#2563eb; --ui-brand-2:#1e3a8a;
-  --site-bg:#dce6f2; /* خلفية الموقع */
+.card{background:linear-gradient(180deg,#0f1730,#0c1326);border:1px solid #243354;border-radius:var(--radius);padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.card h2{margin:0 0 6px;font-size:20px}
+.muted{color:var(--muted);font-size:13px}
 
-  /* ألوان ورقة السيرة (داخل الورقة) */
-  --accent:#3a6ea5;  /* لون الشريط الجانبي */
-  --text:#0b1220; --muted:#475569; --chip:#1f2937;
+.panel{display:none}
+.panel.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-  /* قياسات */
-  --sheet-w:210mm; --sheet-h:297mm;
-  --bar-w:56mm; /* شريط جانبي مناسب، غيّره لـ 50–60mm حسب ذوقك */
-  --radius:14px;
-}
+.drop{border:1.5px dashed #35507f;border-radius:14px;padding:18px;text-align:center;background:#0e1628}
+.drop input{display:none}
+.drop label{display:inline-block;padding:10px 14px;border-radius:10px;background:#13213a;border:1px solid #2b3e66;cursor:pointer}
 
-*{box-sizing:border-box}
-html,body{margin:0}
-body{
-  font-family:"Tajawal",system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:var(--site-bg); color:#0b1220;
-}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid #2b3e66;background:#14223b;color:var(--text);cursor:pointer}
+.btn.brand{background:linear-gradient(180deg,#1a6eff,#1147ff);border-color:#2f55ff}
+.btn.good{background:linear-gradient(180deg,#15803d,#166534);border-color:#2e7d32}
+.btn.danger{background:linear-gradient(180deg,#b91c1c,#7f1d1d);border-color:#7f1d1d}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
-/* رأس وأزرار الواجهة (ألوانها منفصلة عن الورقة) */
-.header{max-width:980px;margin:16px auto 8px;padding:0 12px;display:flex;align-items:center;gap:10px;justify-content:space-between}
-.brand{font-weight:800;display:flex;align-items:center;gap:8px}
-.badge{font-size:12px;background:#fff;border:1px solid rgba(2,6,23,.12);padding:6px 10px;border-radius:999px;color:#334155}
-.toolbar{max-width:980px;margin:0 auto 12px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.btn{appearance:none;border:none;cursor:pointer;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--ui-brand),var(--ui-brand-2));color:#fff;font-weight:800;box-shadow:0 6px 14px rgba(0,0,0,.18)}
-.btn.ghost{background:#fff;color:#0b1220;border:1px solid rgba(2,6,23,.15);box-shadow:none;font-weight:700}
+.list{margin:10px 0 0;padding:0;list-style:none;max-height:180px;overflow:auto;border:1px solid #223356;border-radius:12px}
+.list li{padding:8px 12px;border-bottom:1px solid #1d2a45;font-size:14px;display:flex;justify-content:space-between;gap:10px}
+.list li:last-child{border-bottom:0}
 
-/* لوحة الإدخال */
-.editor{max-width:980px;margin:0 auto 14px;background:#fff;border:1px solid rgba(2,6,23,.12);border-radius:14px;padding:12px}
-label{font-weight:700;font-size:13px;margin-bottom:6px;display:block}
-.input,textarea,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(2,6,23,.15);background:#fff;color:#0b1220;outline:none}
-.help{font-size:12px;color:#64748b;margin:4px 2px 10px}
-.grid{display:grid;gap:12px}
-.two{grid-template-columns:1fr 1fr}
-.three{grid-template-columns:repeat(3,1fr)}
-@media (max-width:860px){.two,.three{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.field input,.field textarea, .field select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2b3e66;background:#0e1628;color:var(--text)}
+.field textarea{min-height:110px;resize:vertical}
 
-/* المعاينة */
-.sheet-wrap{max-width:calc(var(--sheet-w) + 32px);margin:0 auto 40px;padding:16px;border-radius:16px;background:#ffffffb3;border:1px solid rgba(2,6,23,.08)}
-.sheet{width:var(--sheet-w);min-height:var(--sheet-h);background:#fff;position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.22);color:var(--text)}
+.cv{background:linear-gradient(180deg,#0e1529,#0c1222);border:1px solid #273455;border-radius:16px;padding:18px}
+.cv .sheet{width:794px; /* A4 at 96dpi */ min-height:1123px;background:#ffffff;color:#0d1321;margin:auto;border-radius:8px;box-shadow:0 0 0 1px #e6eaf3 inset;overflow:hidden}
+@media (max-width: 820px){.cv .sheet{width:100%}}
+.cv-header{display:flex;gap:16px;align-items:center;padding:22px 26px;background:linear-gradient(90deg,#0b1220 0%,#133869 100%);color:#fff}
+.avatar{width:84px;height:84px;border-radius:50%;background:#d1d5db;overflow:hidden;border:3px solid rgba(255,255,255,.18)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.cv-body{display:grid;grid-template-columns:280px 1fr}
+@media (max-width: 720px){.cv-body{grid-template-columns:1fr}}
+.cv-side{background:#f6f8fc;padding:18px}
+.cv-main{padding:22px}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px;margin:0 4px 6px 0}
+.skill{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+.skill > span{display:block;height:100%;background:#2563eb}
 
-/* الشريط الجانبي الحقيقي */
-.sheet.with-sidebar .bar{position:absolute;top:0;bottom:0;right:0;width:var(--bar-w);background:var(--accent);color:#fff;border-radius:0 var(--radius) var(--radius) 0}
-[dir="rtl"] .sheet.with-sidebar .bar{left:0;right:auto;border-radius:var(--radius) 0 0 var(--radius)}
+.footer{margin-top:28px;text-align:center;font-size:12px;color:var(--muted)}
 
-.content{position:relative;z-index:2;padding:18mm}
-.sheet.with-sidebar .content{padding-inline-end:calc(18mm + var(--bar-w) + 6mm)}
-h1,h2,h3{margin:0 0 8px} h1{font-size:26px} h2{font-size:20px} h3{font-size:16px;border-bottom:2px solid var(--chip);display:inline-block;padding-bottom:2px;margin-top:14px}
-.meta{display:flex;gap:12px;flex-wrap:wrap;color:#334155}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.chip{border:1px solid var(--chip);border-radius:999px;padding:6px 10px;font-size:12px}
-
-/* بطاقة فوق الشريط (تعرض مهارات/لغات/تواصل) */
-.side-card{position:absolute;z-index:3;top:18mm;inset-inline-end:12mm;width:calc(var(--bar-w) - 24mm);background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;color:#0b1220}
-[dir="rtl"] .side-card{inset-inline-start:12mm;inset-inline-end:auto}
-
-/* وضع الطباعة */
-.print-mode .header,.print-mode .toolbar,.print-mode .editor{display:none!important}
-.print-mode body,.print-mode .sheet-wrap{background:#fff!important}
-.print-mode .sheet{box-shadow:none;border-radius:0}
-@media print{
-  body{margin:0;background:#fff!important}
-  .header,.toolbar,.editor{display:none!important}
-  .sheet-wrap{max-width:unset;border:0;padding:0;margin:0;background:#fff!important}
-  .sheet{width:210mm!important;min-height:297mm!important;border-radius:0;box-shadow:none}
-  @page{size:A4;margin:0}
-}
-
-/* موبايل */
-@media (max-width:520px){
-  :root{--bar-w:48mm}
-  .sheet.with-sidebar .content{padding:14mm}
-  .side-card{display:none}
-}
-</style>
+  </style>
 </head>
 <body>
-
-<!-- واجهة الموقع (ألوان منفصلة) -->
-<div class="header">
-  <div class="brand">📄 <span>صانع سيرة ذاتية</span></div>
-  <span class="badge">معاينة يدوية • PDF نظيف</span>
-</div>
-<div class="toolbar">
-  <button class="btn" id="btnPreview">معاينة</button>
-  <button class="btn" id="btnPrint">تصدير PDF</button>
-  <button class="btn ghost" id="btnToggle">إظهار / إخفاء التعديل</button>
-</div>
-
-<!-- نموذج الإدخال (بتلميحات واضحة) -->
-<div class="editor" id="editor">
-  <div class="grid two">
-    <div>
-      <label>الاسم الكامل</label>
-      <input id="i_name" class="input" placeholder="اكتب اسمك الثلاثي أو الرباعي (مثال: عبد الله محمد الحكم)" />
-      <div class="help">سيظهر أعلى الورقة بحجم كبير.</div>
-    </div>
-    <div>
-      <label>المسمى الوظيفي</label>
-      <input id="i_title" class="input" placeholder="مثال: مطوّر واجهات أمامية | React" />
-      <div class="help">يفضّل أن يكون مختصرًا ووصفيًا.</div>
-    </div>
-  </div>
-
-  <div class="grid three">
-    <div>
-      <label>البريد</label>
-      <input id="i_email" class="input" placeholder="استخدم بريدًا احترافيًا (name.lastname@gmail.com)" />
-    </div>
-    <div>
-      <label>الهاتف</label>
-      <input id="i_phone" class="input" placeholder="رقم مع رمز الدولة (مثال: +49 151 2345678)" />
-    </div>
-    <div>
-      <label>المدينة</label>
-      <input id="i_city" class="input" placeholder="مثال: Berlin, DE" />
-    </div>
-  </div>
-
-  <div>
-    <label>الرابط (اختياري)</label>
-    <input id="i_site" class="input" placeholder="LinkedIn أو موقع شخصي (مثال: linkedin.com/in/username)" />
-  </div>
-
-  <div>
-    <label>الملخص المهني</label>
-    <textarea id="i_summary" rows="3" class="input" placeholder="3–4 جمل: سنوات خبرة + مجال + إنجاز ملحوظ + ما تبحث عنه"></textarea>
-  </div>
-
-  <div class="grid two">
-    <div>
-      <label>المهارات (افصل بفواصل)</label>
-      <input id="i_skills" class="input" placeholder="JavaScript, React, CSS, Git" />
-      <div class="help">رتّب من الأقوى للأقل.</div>
-    </div>
-    <div>
-      <label>اللغات (افصل بفواصل + مستوى)</label>
-      <input id="i_langs" class="input" placeholder="العربية (أم)، الإنجليزية B2" />
-    </div>
-  </div>
-
-  <div class="grid two">
-    <div>
-      <label>الخبرات — HTML بسيط</label>
-      <textarea id="i_exp" rows="5" class="input" placeholder="<p><strong>المسمى</strong> — الشركة <span style='color:#64748b'>2022–الآن</span><br>• إنجاز مختصر<br>• مسؤولية رئيسية</p>"></textarea>
-      <div class="help">يسمح بـ &lt;p&gt; و &lt;strong&gt; و &lt;br&gt; والنقاط.</div>
-    </div>
-    <div>
-      <label>التعليم — HTML بسيط</label>
-      <textarea id="i_edu" rows="5" class="input" placeholder="<p><strong>بكالوريوس علوم الحاسوب</strong> — جامعة X <span style='color:#64748b'>2021</span><br>مشروع تخرج / معدل.</p>"></textarea>
-    </div>
-  </div>
-
-  <div class="grid two">
-    <div>
-      <label>القالب</label>
-      <div style="display:flex;gap:12px;align-items:center">
-        <label><input type="radio" name="tpl" value="sidebar" checked> شريط جانبي</label>
-        <label><input type="radio" name="tpl" value="classic"> بدون شريط</label>
+  <div class="container">
+    <div class="nav">
+      <div class="logo" title="خدمات PDF & CV">
+        <span class="logo-badge">📄</span>
+        <span>خدمات PDF & CV</span>
       </div>
-      <div class="help">اختر شريط أو لا. حجم الشريط مضبوط حتى لا يأكل الصفحة.</div>
+      <div class="tabs" role="tablist" aria-label="الأقسام">
+        <button class="tab-btn" data-tab="pdf" aria-selected="true">أدوات PDF</button>
+        <button class="tab-btn" data-tab="cv">منشئ السيرة الذاتية</button>
+        <button class="tab-btn" data-tab="about">التعريف & التسعير</button>
+      </div>
+    </div><!-- PDF TOOLS PANEL -->
+<section id="panel-pdf" class="panel active">
+  <div class="grid">
+    <div class="card">
+      <h2>دمج ملفات PDF</h2>
+      <p class="muted">ارفع عدة ملفات PDF بترتيبك ثم اضغط دمج.</p>
+      <div class="drop" id="merge-drop">
+        <input type="file" id="merge-input" accept="application/pdf" multiple>
+        <label for="merge-input">اختر ملفات PDF</label>
+        <ul id="merge-list" class="list" aria-live="polite"></ul>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn brand" id="merge-btn">دمـج وتحميل</button>
+        <button class="btn" id="merge-clear">تفريغ</button>
+      </div>
     </div>
-    <div>
-      <label>ألوان ورقة السيرة/واجهة الموقع</label>
-      <div class="grid two">
-        <div>
-          <input id="i_accent" type="color" class="input" value="#3a6ea5" />
-          <div class="help">لون الشريط (داخل الورقة).</div>
+
+    <div class="card">
+      <h2>تقسيم ملف PDF</h2>
+      <p class="muted">اختر ملفًا وأدخل الصفحات مثل: <b>1-3,5,8-9</b></p>
+      <div class="field">
+        <input type="file" id="split-input" accept="application/pdf">
+      </div>
+      <div class="field">
+        <label for="ranges">نطاق الصفحات</label>
+        <input id="ranges" placeholder="مثال: 1-2,4,7-9" />
+      </div>
+      <div class="row">
+        <button class="btn brand" id="split-btn">تقسيم وتحميل</button>
+        <button class="btn" id="split-clear">تفريغ</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>صور → PDF</h2>
+      <p class="muted">حوّل صور JPG/PNG إلى ملف PDF واحد (صفحة لكل صورة).</p>
+      <div class="field">
+        <input type="file" id="img2pdf-input" accept="image/*" multiple>
+      </div>
+      <div class="row">
+        <label>حجم الصفحة:
+          <select id="paper">
+            <option value="a4">A4</option>
+            <option value="letter">Letter</option>
+          </select>
+        </label>
+        <label>ملاءمة:
+          <select id="fit">
+            <option value="contain">احتواء</option>
+            <option value="cover">ملء الصفحة</option>
+          </select>
+        </label>
+        <button class="btn good" id="img2pdf-btn">تحويل وتحميل</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>نصائح</h2>
+      <ul>
+        <li>كل الأدوات تعمل داخل المتصفح (بدون رفع ملفات إلى خادم).</li>
+        <li>لضغط PDF كبير، جرّب إعادة تصديره عبر "صور → PDF" مع صور أخف.</li>
+        <li>يمكنك تغيير ترتيب ملفات الدمج بسحبها في القائمة.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CV BUILDER PANEL -->
+<section id="panel-cv" class="panel">
+  <div class="grid">
+    <div class="card">
+      <h2>بيانات السيرة الذاتية</h2>
+      <div class="field">
+        <label>الاسم الكامل</label>
+        <input id="cv-name" placeholder="الاسم" />
+      </div>
+      <div class="field">
+        <label>المسمى الوظيفي</label>
+        <input id="cv-title" placeholder="مثال: مطوّر واجهات" />
+      </div>
+      <div class="field">
+        <label>الملخص المهني</label>
+        <textarea id="cv-summary" placeholder="نبذة قصيرة…"></textarea>
+      </div>
+      <div class="field">
+        <label>الخبرات (كل خبرة في سطر)</label>
+        <textarea id="cv-exp" placeholder="الشركة — المنصب — السنوات"></textarea>
+      </div>
+      <div class="field">
+        <label>التعليم</label>
+        <textarea id="cv-edu" placeholder="الجامعة — الدرجة — السنوات"></textarea>
+      </div>
+      <div class="field">
+        <label>المهارات (مفصولة بفواصل)</label>
+        <input id="cv-skills" placeholder="JavaScript, React, Welding…" />
+      </div>
+      <div class="field">
+        <label>الصورة (اختياري)</label>
+        <input type="file" id="cv-photo" accept="image/*" />
+      </div>
+      <div class="row">
+        <button class="btn brand" id="cv-generate">تحديث المعاينة</button>
+        <button class="btn good" id="cv-download">تحميل PDF</button>
+        <button class="btn" id="cv-clear">تفريغ</button>
+      </div>
+    </div>
+
+    <div class="card cv">
+      <h2 style="margin-bottom:10px">معاينة السيرة الذاتية</h2>
+      <div id="cv-sheet" class="sheet" aria-label="معاينة قابلة للطباعة">
+        <div class="cv-header">
+          <div class="avatar" id="cv-avatar"></div>
+          <div>
+            <div id="cv-name-v" style="font-size:26px;font-weight:800">الاسم الكامل</div>
+            <div id="cv-title-v" style="opacity:.9">المسمى الوظيفي</div>
+          </div>
         </div>
-        <div>
-          <input id="i_ui" type="color" class="input" value="#2563eb" />
-          <div class="help">لون الأزرار (خارج الورقة).</div>
+        <div class="cv-body">
+          <aside class="cv-side">
+            <h3 style="margin-top:0">المهارات</h3>
+            <div id="cv-skills-v"></div>
+          </aside>
+          <main class="cv-main">
+            <section>
+              <h3 style="margin-top:0">الملخص</h3>
+              <p id="cv-summary-v">اكتب ملخصك المهني بإيجاز ووضوح.</p>
+            </section>
+            <section>
+              <h3>الخبرات</h3>
+              <div id="cv-exp-v"></div>
+            </section>
+            <section>
+              <h3>التعليم</h3>
+              <div id="cv-edu-v"></div>
+            </section>
+          </main>
         </div>
       </div>
+      <div class="footer">* سيتم حفظ كل شيء محليًا في المتصفح (LocalStorage).</div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- المعاينة -->
-<div class="sheet-wrap">
-  <div class="sheet with-sidebar" id="sheet">
-    <div class="bar" id="bar">
-      <div class="side-card" id="sideCard">
-        <h3 style="margin-top:0">التواصل</h3>
-        <div id="v_contact" style="font-size:13px;line-height:1.6"></div>
-        <h3 style="margin-top:10px">المهارات</h3>
-        <div id="v_skills_side" class="chips"></div>
-        <h3 style="margin-top:10px">اللغات</h3>
-        <div id="v_langs_side" class="chips"></div>
-      </div>
-    </div>
-    <div class="content">
-      <h1 id="v_name">الاسم الكامل</h1>
-      <div class="meta" id="v_meta"></div>
-
-      <h3>الملخص</h3>
-      <p id="v_summary" style="margin:6px 0 10px"></p>
-
-      <h3>الخبرات</h3>
-      <div id="v_exp"></div>
-
-      <h3>التعليم</h3>
-      <div id="v_edu"></div>
+<!-- ABOUT PANEL -->
+<section id="panel-about" class="panel">
+  <div class="grid" style="grid-template-columns:1fr">
+    <div class="card">
+      <h2>عن الموقع والتسعير</h2>
+      <p class="muted">هذا القالب يعمل 100% على الواجهة (Front‑End) ويمكن نشره على GitHub Pages أو Netlify بسهولة.
+        يمكنك لاحقًا إضافة بوابة دفع (Stripe) لقفل بعض الميزات المتقدمة.</p>
+      <ul>
+        <li><b>الخطة المجانية:</b> دمج حتى 10 ملفات، تقسيم حتى 30 صفحة، قالب CV واحد.</li>
+        <li><b>الخطة المدفوعة:</b> غير محدود + قوالب CV إضافية + حفظ سحابي.</li>
+      </ul>
+      <p>الخصوصية: لا يتم رفع الملفات لأي خادم في هذه النسخة؛ كل المعالجة تتم داخل جهاز المستخدم.</p>
     </div>
   </div>
-</div>
+</section>
 
-<script>
-const $=s=>document.querySelector(s); const $$=s=>Array.from(document.querySelectorAll(s));
-const KEY='cv_manual_preview_v1';
+<div class="footer">© <span id="year"></span> — موقع خدمات PDF & CV — نسخة مبدئية جاهزة للتطوير</div>
 
-/* تحويل قائمة نصية إلى Chips */
-function chips(str){
-  const frag=document.createDocumentFragment();
-  str.split(/,|،/).map(s=>s.trim()).filter(Boolean).forEach(t=>{
-    const sp=document.createElement('span'); sp.className='chip'; sp.textContent=t; frag.appendChild(sp);
-  }); return frag;
-}
+  </div>  <!-- Libraries -->  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>  <script>
+    // ===== Tabs =====
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = {
+      pdf: document.getElementById('panel-pdf'),
+      cv: document.getElementById('panel-cv'),
+      about: document.getElementById('panel-about')
+    };
+    tabs.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        tabs.forEach(b=>b.setAttribute('aria-selected','false'));
+        btn.setAttribute('aria-selected','true');
+        Object.values(panels).forEach(p=>p.classList.remove('active'));
+        panels[btn.dataset.tab].classList.add('active');
+      })
+    });
 
-/* المعاينة اليدوية فقط عند الضغط على زر "معاينة" */
-function preview(){
-  // فصل الألوان: ورقة السيرة
-  document.documentElement.style.setProperty('--accent', $('#i_accent').value || '#3a6ea5');
-  // ألوان الواجهة
-  document.documentElement.style.setProperty('--ui-brand', $('#i_ui').value || '#2563eb');
+    // ===== YEAR =====
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-  // تبديل القالب
-  const tpl = document.querySelector('input[name="tpl"]:checked')?.value || 'sidebar';
-  const sheet = $('#sheet');
-  if(tpl==='sidebar') sheet.classList.add('with-sidebar'); else sheet.classList.remove('with-sidebar');
+    // ===== Helpers =====
+    const $ = sel => document.querySelector(sel);
+    function downloadBlob(bytes, filename, type='application/pdf'){
+      const blob = new Blob([bytes], {type});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
 
-  // اسم + ميتا
-  $('#v_name').textContent = $('#i_name').value || 'الاسم الكامل';
-  const meta=[];
-  if($('#i_title').value) meta.push($('#i_title').value);
-  if($('#i_email').value) meta.push($('#i_email').value);
-  if($('#i_phone').value) meta.push($('#i_phone').value);
-  if($('#i_city').value)  meta.push($('#i_city').value);
-  if($('#i_site').value)  meta.push($('#i_site').value);
-  $('#v_meta').textContent = meta.join(' • ');
+    // ===== MERGE PDF =====
+    const mergeInput = document.getElementById('merge-input');
+    const mergeList = document.getElementById('merge-list');
+    const mergeFiles = [];
 
-  // ملخص
-  $('#v_summary').textContent = $('#i_summary').value || '';
+    function refreshMergeList(){
+      mergeList.innerHTML = '';
+      mergeFiles.forEach((f,idx)=>{
+        const li = document.createElement('li');
+        li.draggable = true;
+        li.innerHTML = `<span>${idx+1}. ${f.name} <small class="muted">(${(f.size/1024/1024).toFixed(2)} MB)</small></span><button class="btn danger" data-i="${idx}">حذف</button>`;
+        mergeList.appendChild(li);
+      });
+    }
+    mergeList.addEventListener('click', (e)=>{
+      const i = e.target.dataset.i;
+      if(i!==undefined){ mergeFiles.splice(+i,1); refreshMergeList(); }
+    });
+    // Drag reorder
+    let dragIdx=null;
+    mergeList.addEventListener('dragstart', e=>{
+      dragIdx = [...mergeList.children].indexOf(e.target);
+    });
+    mergeList.addEventListener('dragover', e=>{ e.preventDefault(); });
+    mergeList.addEventListener('drop', e=>{
+      e.preventDefault();
+      const dropIdx = [...mergeList.children].indexOf(e.target.closest('li'));
+      if(dragIdx>=0 && dropIdx>=0 && dragIdx!==dropIdx){
+        const [m] = mergeFiles.splice(dragIdx,1);
+        mergeFiles.splice(dropIdx,0,m);
+        refreshMergeList();
+      }
+    });
 
-  // خبرات/تعليم (HTML بسيط)
-  $('#v_exp').innerHTML = $('#i_exp').value || '';
-  $('#v_edu').innerHTML = $('#i_edu').value || '';
+    mergeInput.addEventListener('change', (e)=>{
+      [...e.target.files].forEach(f=>mergeFiles.push(f));
+      refreshMergeList();
+    });
+    document.getElementById('merge-clear').onclick = ()=>{ mergeFiles.length=0; refreshMergeList(); };
 
-  // البطاقة الجانبية: تواصل/مهارات/لغات
-  const contactHTML = [$('#i_email').value,$('#i_phone').value,$('#i_city').value,$('#i_site').value]
-    .filter(Boolean).join('<br>');
-  $('#v_contact').innerHTML = contactHTML || '';
+    document.getElementById('merge-btn').onclick = async ()=>{
+      if(!mergeFiles.length) return alert('أضف ملفات أولاً');
+      const { PDFDocument } = PDFLib;
+      const merged = await PDFDocument.create();
+      for(const f of mergeFiles){
+        const bytes = await f.arrayBuffer();
+        const src = await PDFDocument.load(bytes);
+        const pages = await merged.copyPages(src, src.getPageIndices());
+        pages.forEach(p=>merged.addPage(p));
+      }
+      const out = await merged.save({
+        addDefaultPage:false,
+      });
+      downloadBlob(out, `merged_${Date.now()}.pdf`);
+    };
 
-  const s=$('#v_skills_side'); s.innerHTML=''; s.appendChild(chips($('#i_skills').value||''));
-  const l=$('#v_langs_side'); l.innerHTML=''; l.appendChild(chips($('#i_langs').value||''));
-}
+    // ===== SPLIT PDF =====
+    document.getElementById('split-clear').onclick = ()=>{ $('#split-input').value=''; $('#ranges').value=''; };
 
-/* حفظ/استرجاع (اختياري لكنه مفيد) */
-function save(){
-  const data={
-    name:$('#i_name').value,title:$('#i_title').value,email:$('#i_email').value,phone:$('#i_phone').value,
-    city:$('#i_city').value,site:$('#i_site').value,summary:$('#i_summary').value,
-    skills:$('#i_skills').value,langs:$('#i_langs').value,exp:$('#i_exp').value,edu:$('#i_edu').value,
-    accent:$('#i_accent').value,ui:$('#i_ui').value,tpl:document.querySelector('input[name="tpl"]:checked')?.value||'sidebar'
-  };
-  localStorage.setItem(KEY, JSON.stringify(data));
-  alert('تم الحفظ.');
-}
-function load(){
-  const raw=localStorage.getItem(KEY);
-  if(!raw){ alert('لا يوجد بيانات محفوظة.'); return; }
-  try{
-    const d=JSON.parse(raw);
-    $('#i_name').value=d.name||''; $('#i_title').value=d.title||'';
-    $('#i_email').value=d.email||''; $('#i_phone').value=d.phone||'';
-    $('#i_city').value=d.city||''; $('#i_site').value=d.site||'';
-    $('#i_summary').value=d.summary||''; $('#i_skills').value=d.skills||'';
-    $('#i_langs').value=d.langs||''; $('#i_exp').value=d.exp||''; $('#i_edu').value=d.edu||'';
-    $('#i_accent').value=d.accent||'#3a6ea5'; $('#i_ui').value=d.ui||'#2563eb';
-    if(d.tpl){ $$('input[name="tpl"]').forEach(r=>r.checked=(r.value===d.tpl)); }
-    alert('تم الاسترجاع.'); 
-  }catch{ alert('تعذّر الاسترجاع.'); }
-}
+    function parseRanges(str, total){
+      const set = new Set();
+      str.split(',').map(s=>s.trim()).filter(Boolean).forEach(part=>{
+        if(part.includes('-')){
+          const [a,b] = part.split('-').map(n=>parseInt(n,10));
+          const from = Math.min(a,b), to = Math.max(a,b);
+          for(let i=from;i<=to;i++) if(i>=1 && i<=total) set.add(i-1);
+        }else{
+          const n = parseInt(part,10); if(n>=1 && n<=total) set.add(n-1);
+        }
+      });
+      return [...set].sort((x,y)=>x-y);
+    }
 
-/* طباعة PDF دقيقة */
-function enterPrint(){ document.body.classList.add('print-mode'); }
-function exitPrint(){ document.body.classList.remove('print-mode'); }
-function printPDF(){ enterPrint(); setTimeout(()=>{ window.print(); setTimeout(exitPrint,800); },60); }
+    document.getElementById('split-btn').onclick = async ()=>{
+      const file = document.getElementById('split-input').files?.[0];
+      const ranges = document.getElementById('ranges').value.trim();
+      if(!file) return alert('اختر ملف PDF');
+      const bytes = await file.arrayBuffer();
+      const { PDFDocument } = PDFLib;
+      const src = await PDFDocument.load(bytes);
+      const total = src.getPageCount();
+      const indices = ranges ? parseRanges(ranges, total) : src.getPageIndices();
+      if(!indices.length) return alert('لا توجد صفحات مطابقة للنطاق');
+      const outDoc = await PDFDocument.create();
+      const pages = await outDoc.copyPages(src, indices);
+      pages.forEach(p=>outDoc.addPage(p));
+      const out = await outDoc.save();
+      downloadBlob(out, `split_${Date.now()}.pdf`);
+    };
 
-/* أزرار */
-$('#btnPreview').addEventListener('click', preview);
-$('#btnPrint').addEventListener('click', printPDF);
-$('#btnToggle').addEventListener('click', ()=>{ const ed=$('#editor'); ed.style.display = (ed.style.display==='none'?'block':'none'); });
+    // ===== IMAGES → PDF =====
+    const sizeMap = {
+      a4: { w: 595.28, h: 841.89 }, // pt
+      letter: { w: 612, h: 792 }
+    };
 
-/* اختصار: Ctrl/Cmd + P ينصح بالمعاينة قبل الطباعة */
-window.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='p'){ if(confirm('هل تريد تحديث المعاينة قبل الطباعة؟')) preview(); }
-});
+    document.getElementById('img2pdf-btn').onclick = async ()=>{
+      const files = document.getElementById('img2pdf-input').files;
+      if(!files || !files.length) return alert('اختر صورًا أولاً');
+      const paper = document.getElementById('paper').value;
+      const fit = document.getElementById('fit').value; // contain | cover
+      const { jsPDF } = window.jspdf || {};
 
-/* تهيئة مبدئية: حمّل إن وجد ثم اعرض معاينة أولى */
-(function init(){
-  const raw=localStorage.getItem(KEY);
-  if(raw){ try{ const d=JSON.parse(raw);
-    $('#i_name').value=d.name||''; $('#i_title').value=d.title||'';
-    $('#i_email').value=d.email||''; $('#i_phone').value=d.phone||'';
-    $('#i_city').value=d.city||''; $('#i_site').value=d.site||'';
-    $('#i_summary').value=d.summary||''; $('#i_skills').value=d.skills||'';
-    $('#i_langs').value=d.langs||''; $('#i_exp').value=d.exp||''; $('#i_edu').value=d.edu||'';
-    $('#i_accent').value=d.accent||'#3a6ea5'; $('#i_ui').value=d.ui||'#2563eb';
-    if(d.tpl){ $$('input[name="tpl"]').forEach(r=>r.checked=(r.value===d.tpl)); }
-  }catch{} }
-  preview(); // معاينة أولى بالتخطيط الافتراضي
-})();
-</script>
-</body>
+      // إذا لم تتوفر jsPDF من html2pdf، ننشئ مثيل يدويًا
+      const pdf = new window.jspdf.jsPDF({ unit:'pt', format:[sizeMap[paper].w, sizeMap[paper].h], orientation:'portrait' });
+
+      for(let i=0;i<files.length;i++){
+        const img = await fileToImage(files[i]);
+        if(i>0) pdf.addPage([sizeMap[paper].w, sizeMap[paper].h], 'portrait');
+        const rect = fitRect(img.width, img.height, sizeMap[paper].w, sizeMap[paper].h, fit);
+        pdf.addImage(imgToDataURL(img), undefined, rect.x, rect.y, rect.w, rect.h);
+      }
+      pdf.save(`images_${Date.now()}.pdf`);
+    };
+
+    function fileToImage(file){
+      return new Promise((resolve,reject)=>{
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          const img = new Image();
+          img.onload=()=>resolve(img);
+          img.onerror=reject;
+          img.src = reader.result;
+        };
+        reader.onerror=reject;
+        reader.readAsDataURL(file);
+      });
+    }
+    function imgToDataURL(img){
+      const c = document.createElement('canvas');
+      c.width = img.width; c.height = img.height;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img,0,0);
+      return c.toDataURL('image/jpeg', 0.92);
+    }
+    function fitRect(iw, ih, cw, ch, mode='contain'){
+      const ir = iw/ih, cr = cw/ch;
+      let w,h;
+      if((mode==='contain' && ir>cr) || (mode==='cover' && ir<cr)){
+        w = cw; h = w/ir;
+      }else{ h = ch; w = h*ir; }
+      const x = (cw - w)/2, y = (ch - h)/2;
+      return {x,y,w,h};
+    }
+
+    // ===== CV BUILDER =====
+    const store = (k,v)=>localStorage.setItem(k, JSON.stringify(v));
+    const load = (k, def)=>{ try{ return JSON.parse(localStorage.getItem(k)) ?? def }catch{ return def }}
+
+    function syncPreview(){
+      const name = $('#cv-name').value.trim() || 'الاسم الكامل';
+      const title = $('#cv-title').value.trim() || 'المسمى الوظيفي';
+      const summary = $('#cv-summary').value.trim() || 'اكتب ملخصك المهني بإيجاز ووضوح.';
+      const exp = $('#cv-exp').value.trim().split('\n').filter(Boolean);
+      const edu = $('#cv-edu').value.trim().split('\n').filter(Boolean);
+      const skills = $('#cv-skills').value.split(',').map(s=>s.trim()).filter(Boolean);
+
+      $('#cv-name-v').textContent = name;
+      $('#cv-title-v').textContent = title;
+      $('#cv-summary-v').textContent = summary;
+
+      const expV = $('#cv-exp-v'); expV.innerHTML='';
+      exp.forEach(line=>{
+        const p = document.createElement('p'); p.textContent = line; expV.appendChild(p);
+      });
+      const eduV = $('#cv-edu-v'); eduV.innerHTML='';
+      edu.forEach(line=>{ const p = document.createElement('p'); p.textContent=line; eduV.appendChild(p); });
+
+      const skillsV = $('#cv-skills-v'); skillsV.innerHTML='';
+      skills.forEach(s=>{ const span=document.createElement('span'); span.className='tag'; span.textContent=s; skillsV.appendChild(span); })
+
+      store('cv-data',{name,title,summary,exp,edu,skills,photo:load('cv-photo',null)});
+    }
+
+    document.getElementById('cv-generate').onclick = syncPreview;
+    document.getElementById('cv-clear').onclick = ()=>{
+      ['cv-name','cv-title','cv-summary','cv-exp','cv-edu','cv-skills'].forEach(id=>$('#'+id).value='');
+      localStorage.removeItem('cv-data'); localStorage.removeItem('cv-photo');
+      $('#cv-avatar').innerHTML='';
+      syncPreview();
+    };
+
+    document.getElementById('cv-download').onclick = ()=>{
+      const sheet = document.getElementById('cv-sheet');
+      const name = ($('#cv-name').value.trim() || 'CV');
+      const opt = { filename: `${name.replace(/\s+/g,'_')}.pdf`, margin: 0, image:{ type:'jpeg', quality: 0.98 }, html2canvas:{ scale: 2, useCORS:true }, jsPDF:{ unit:'pt', format:'a4', orientation:'portrait' } };
+      html2pdf().set(opt).from(sheet).save();
+    };
+
+    // Photo upload
+    document.getElementById('cv-photo').addEventListener('change', async (e)=>{
+      const file = e.target.files?.[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{ localStorage.setItem('cv-photo', reader.result); renderAvatar(); };
+      reader.readAsDataURL(file);
+    });
+    function renderAvatar(){
+      const data = localStorage.getItem('cv-photo');
+      const box = document.getElementById('cv-avatar');
+      box.innerHTML = data ? `<img src="${data}" alt=""/>` : '';
+    }
+
+    // Load persisted
+    (function(){
+      const data = load('cv-data',null);
+      if(data){
+        $('#cv-name').value=data.name||'';
+        $('#cv-title').value=data.title||'';
+        $('#cv-summary').value=data.summary||'';
+        $('#cv-exp').value=(data.exp||[]).join('\n');
+        $('#cv-edu').value=(data.edu||[]).join('\n');
+        $('#cv-skills').value=(data.skills||[]).join(', ');
+      }
+      renderAvatar();
+      syncPreview();
+    })();
+  </script>  <!-- jsPDF (exposed by html2pdf bundle) shim for direct access above -->  <script>window.jspdf = window.jspdf || window.jsPDF ? { jsPDF: window.jsPDF } : undefined;</script></body>
 </html>
