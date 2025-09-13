@@ -207,6 +207,8 @@
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+  <!-- إضافة html2canvas صريحة لتحسين الثبات على الجوال -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <script>
     // ===== Tabs =====
@@ -365,7 +367,6 @@
       return parts.join('_') || 'CV';
     }
     function splitLines(s){
-      // تفادي استخدام \n حرفياً داخل الاستبدال — نعتمد على كود 10
       const NL = String.fromCharCode(10);
       return (s||'').split(NL).filter(function(x){return x && x.trim().length;});
     }
@@ -402,31 +403,88 @@
       syncPreview();
     };
 
-    // تنزيل CV كـ PDF (حل مشكلة صفحات فارغة: نسخة معزولة + انتظار الخطوط)
+    // تنزيل CV كـ PDF — ثابت على الجوال والكمبيوتر (html2canvas + jsPDF) مع احتياطي html2pdf
     document.getElementById('cv-download').onclick = async function(){
       const sheet = document.getElementById('cv-sheet');
       const nameInput = document.getElementById('cv-name');
-      const name = slugifyName((nameInput && nameInput.value) || 'CV');
+      const fileName = slugifyName((nameInput && nameInput.value) || 'CV') + '.pdf';
+
+      // انتظار الخطوط يمنع القماش الأبيض
+      if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch(_) {}
+      }
+
+      // إنشاء نسخة معزولة مرئية 100%
+      const clone = sheet.cloneNode(true);
+      clone.setAttribute('dir','rtl');
+      clone.style.position = 'fixed';
+      clone.style.left = '-10000px';
+      clone.style.top = '0';
+      clone.style.transform = 'none';
+      clone.style.opacity = '1';
+      clone.style.background = '#ffffff';
+      clone.style.width = sheet.offsetWidth + 'px';
+      clone.style.display = 'block';
+      document.body.appendChild(clone);
+      void clone.offsetHeight; // إجبار حساب الأبعاد
+
+      const cleanup = ()=>{ try{ clone.remove(); }catch(_){} };
+
       try{
-        if(document.fonts && document.fonts.ready) await document.fonts.ready;
-        const clone = sheet.cloneNode(true);
-        clone.style.position='fixed';
-        clone.style.left='-10000px';
-        clone.style.top='0';
-        clone.style.transform='none';
-        clone.style.background='#ffffff';
-        clone.style.width = sheet.offsetWidth+'px';
-        document.body.appendChild(clone);
-        const opt = {
-          filename: name + '.pdf',
-          margin: 0,
-          image:{ type:'jpeg', quality: 0.98 },
-          html2canvas:{ scale: 2, useCORS:true, backgroundColor:'#ffffff', windowWidth: clone.scrollWidth || clone.offsetWidth, windowHeight: clone.scrollHeight || clone.offsetHeight, removeContainer:true },
-          jsPDF:{ unit:'pt', format:'a4', orientation:'portrait' }
-        };
-        await html2pdf().set(opt).from(clone).save();
-        clone.remove();
-      }catch(err){ console.error(err); alert('حدثت مشكلة أثناء توليد PDF. حاول ثانية أو قلل حجم الصور.'); }
+        // المسار الأساسي: html2canvas + jsPDF
+        if (window.html2canvas && window.jspdf && window.jspdf.jsPDF) {
+          const canvas = await window.html2canvas(clone, {
+            scale: Math.min(2, (window.devicePixelRatio || 2)),
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false
+          });
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.98);
+          const pdf = new window.jspdf.jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
+
+          const pageW = pdf.internal.pageSize.getWidth();
+          const pageH = pdf.internal.pageSize.getHeight();
+          const imgW = canvas.width, imgH = canvas.height;
+          const ratio = Math.min(pageW / imgW, pageH / imgH);
+          const renderW = imgW * ratio;
+          const renderH = imgH * ratio;
+          const offsetX = (pageW - renderW) / 2;
+          const offsetY = (pageH - renderH) / 2;
+
+          pdf.addImage(imgData, 'JPEG', offsetX, offsetY, renderW, renderH);
+          pdf.save(fileName);
+          cleanup();
+          return;
+        }
+
+        // احتياطي: html2pdf
+        if (window.html2pdf) {
+          await window.html2pdf().set({
+            filename: fileName,
+            margin: 0,
+            image: { type:'jpeg', quality: 0.98 },
+            html2canvas: {
+              scale: Math.min(2, (window.devicePixelRatio || 2)),
+              useCORS: true,
+              backgroundColor: '#ffffff',
+              windowWidth: clone.scrollWidth || clone.offsetWidth,
+              windowHeight: clone.scrollHeight || clone.offsetHeight,
+              removeContainer: true
+            },
+            jsPDF: { unit:'pt', format:'a4', orientation:'portrait' }
+          }).from(clone).save();
+          cleanup();
+          return;
+        }
+
+        alert('لا تتوفر أدوات التصدير (html2canvas/html2pdf). تأكد من تحميل المكتبات.');
+      }catch(err){
+        console.error(err);
+        alert('حدثت مشكلة أثناء توليد PDF. جرّب مرة ثانية أو قلل حجم الصور.');
+      }finally{
+        cleanup();
+      }
     };
 
     // Photo upload
