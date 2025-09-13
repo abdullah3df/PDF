@@ -12,8 +12,7 @@
     :root{
       --bg:#0b1220; --bg2:#0d152b;
       --card:#111a2f; --card2:#0e1629;
-      --ink:#0d1426;
-      --text:#e9eefb; --muted:#9fb0d6;
+      --ink:#0d1426; --text:#e9eefb; --muted:#9fb0d6;
       --brand:#3aa9ff; --brand2:#7ee787;
       --ring: 0 0 0 2px rgb(58 169 255 / .25) inset;
       --paper:#ffffff; --border:#e9edf5;
@@ -57,11 +56,22 @@
     .btn.warn{background:linear-gradient(180deg,#d97706,#b45309);border-color:#b45309}
     .hint{font-size:12px;color:#a9b6d7}
     .cv{background:linear-gradient(180deg,#0e1529,#0c1222);border:1px solid #273455;border-radius:16px;padding:16px}
-    .sheet{width:794px;min-height:1123px;margin:auto;background:var(--paper);color:var(--ink);border-radius:8px;box-shadow:0 0 0 1px var(--border) inset,0 10px 30px rgba(0,0,0,.2);overflow:hidden}
+
+    /* ورقة المعاينة (A4 تقريبًا على الشاشة) */
+    .sheet{
+      width:794px; min-height:1123px; margin:auto;
+      background:var(--paper); color:var(--ink);
+      border-radius:8px;
+      box-shadow:0 0 0 1px var(--border) inset, 0 10px 30px rgba(0,0,0,.2);
+      overflow:hidden;
+    }
     @media (max-width:820px){.sheet{width:100%}}
     .cv-header{display:flex;gap:16px;align-items:center;padding:22px 26px;background:linear-gradient(90deg,#0b1220 0%,#133869 100%);color:#fff}
     .avatar{width:84px;height:84px;border-radius:50%;background:#d1d5db;overflow:hidden;border:3px solid rgba(255,255,255,.18)}
     .avatar img{width:100%;height:100%;object-fit:cover}
+    /* إخفاء مكان الصورة تلقائيًا عندما لا توجد صورة */
+    .avatar:empty{ display:none; }
+
     .cv-titlebox{display:flex;flex-direction:column}
     .cv-name{font-size:26px;font-weight:800;margin:0;color:#fff}
     .cv-role{opacity:.95}
@@ -74,7 +84,8 @@
     .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px;margin:0 6px 6px 0}
     .contact{font-size:13px;color:#ffffffcc}
     .hr{height:1px;background:#e6eaf3;margin:10px 0}
-    .footer-note{margin-top:18px;text-align:center;font-size:12px;color:var(--muted)}
+    .footer-note{margin-top:18px;text-align:center;font-size:12px;color:#var(--muted)}
+
     @page{size:A4;margin:10mm}
     @media print{body{background:#fff}.container,.topbar{display:none!important}.sheet{box-shadow:none!important}}
     .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(5,10,20,.55);z-index:99999;backdrop-filter:blur(2px)}
@@ -241,7 +252,8 @@
         "l-exp":"Erfahrung (eine pro Zeile)","l-edu":"Ausbildung","l-skills":"Fähigkeiten (durch Komma getrennt)","l-photo":"Foto (optional)",
         "t-photo-hint":"Ihr Foto wird automatisch verkleinert.",
         "t-update":"Vorschau aktualisieren","t-download":"PDF herunterladen","t-clear":"Leeren",
-        "t-preview":"Vorschau","t-skills-h":"Fähigkeiten","t-summary-h":"Zusammenfassung","t-exp-h":"Erfahrung","t-edu-h":"Ausbildung","t-local":"* Daten werden lokal gespeichert.",
+        "t-preview":"Vorschau","t-skills-h":"Fähigkeiten","t-summary-h":"Zusammenfassung","t-exp-h":"Erfahrung","t-edu-h":"Ausbildung",
+        "t-local":"* Daten werden lokal gespeichert.",
         "ph-name":"Vollständiger Name","ph-role":"z. B. Frontend-Entwickler","ph-city":"z. B. Berlin, Deutschland","ph-phone":"+49 0000 000000","ph-email":"you@example.com","ph-web":"linkedin.com/in/you",
         "ov-prep":"Wird vorbereitet…","ov-wait":"Bitte einen Moment warten.","ov-export":"PDF wird erstellt…","ov-done":"Heruntergeladen ✅",
         "err-export":"Beim Erstellen des PDFs ist ein Problem aufgetreten. Versuchen Sie es erneut oder verwenden Sie kleinere Bilder."
@@ -346,7 +358,7 @@
     function showOverlay(title,msg,spin=true){ overlay.classList.add("show"); ovTitle.textContent=title; ovMsg.textContent=msg; $("#ov-spin").style.display=spin?"block":"none"; }
     function hideOverlay(){ overlay.classList.remove("show"); }
 
-    // ===== PDF Export — تقطيع متساوٍ ويملأ صفحة A4 بالكامل =====
+    // ===== PDF Export — صفحة واحدة إن أمكن، وإلا تقطيع مضبوط بلا صفحات زائدة =====
     document.getElementById("btn-download").onclick = async ()=>{
       const dict = i18n[document.documentElement.lang] || i18n.ar;
       showOverlay(dict["ov-export"]||"Generating PDF…", dict["ov-wait"]||"Please wait…", true);
@@ -355,10 +367,13 @@
         render(save());
         if (document.fonts && document.fonts.ready){ try{ await document.fonts.ready; }catch{} }
 
-        // نسخة مرئية خارج الشاشة
+        // نسخة مرئية خارج الشاشة + إلغاء الظلال/الحدود
         const sheet = document.getElementById("sheet");
         const clone = sheet.cloneNode(true);
         clone.setAttribute("dir", document.documentElement.dir);
+        clone.style.boxShadow = "none";
+        clone.style.border = "0";
+        clone.style.borderRadius = "0";
         Object.assign(clone.style,{
           position:"fixed", left:"-10000px", top:"0",
           width: sheet.offsetWidth + "px",
@@ -368,7 +383,7 @@
         document.body.appendChild(clone);
         void clone.offsetHeight;
 
-        // انتظر صور النسخة
+        // انتظر الصور
         const imgs = Array.from(clone.querySelectorAll("img"));
         if (imgs.length){
           await Promise.all(imgs.map(img=>{
@@ -387,7 +402,7 @@
         try{ clone.remove(); }catch{}
 
         if (!canvas || !canvas.width || !canvas.height){
-          hideOverlay(); alert("Canvas فارغ. أعد المحاولة بعد تحديث الصفحة."); return;
+          hideOverlay(); alert("Canvas فارغ. أعد المحاولة."); return;
         }
 
         // إعداد PDF
@@ -396,32 +411,43 @@
         const pageW = pdf.internal.pageSize.getWidth();
         const pageH = pdf.internal.pageSize.getHeight();
 
-        // احسب ارتفاع الشريحة بالبيكسل بحيث تساوي نسبة A4: (pageH/pageW) * canvas.width
-        const sliceHeightPx = Math.max(1, Math.round(canvas.width * (pageH / pageW)));
+        // إن كان المحتوى يناسب صفحة واحدة: Scale-to-fit
+        const fitsOnePage = (canvas.height / canvas.width) <= (pageH / pageW) + 1e-4;
+        if (fitsOnePage){
+          const scaleToFit = Math.min(pageW / canvas.width, pageH / canvas.height);
+          const imgW = Math.floor(canvas.width * scaleToFit);
+          const imgH = Math.floor(canvas.height * scaleToFit);
+          const x = Math.floor((pageW - imgW) / 2);
+          const y = Math.floor((pageH - imgH) / 2);
+          const imgData = canvas.toDataURL("image/jpeg", 0.95);
+          pdf.addImage(imgData, "JPEG", x, y, imgW, imgH);
+        }else{
+          // أطول من A4: تقطيع مضبوط بدون صفحة فارغة
+          const sliceH = Math.max(1, Math.round(canvas.width * (pageH / pageW)));
+          const overlap = 2; // تداخل بسيط يمنع خطوط دقيقة
+          const slice = document.createElement("canvas");
+          const sctx = slice.getContext("2d", { willReadFrequently:true });
+          slice.width = canvas.width;
 
-        // تقطيع وملء الصفحة بالكامل (بدون هوامش لتجنّب الفراغات)
-        const sliceCanvas = document.createElement("canvas");
-        const sctx = sliceCanvas.getContext("2d", { willReadFrequently:true });
-        sliceCanvas.width = canvas.width;
+          let y = 0, pageIndex = 0;
+          while (y < canvas.height){
+            const remaining = canvas.height - y;
+            let h = Math.min(sliceH, remaining);
+            if (h <= 2) break; // لا تضف صفحة فارغة
+            slice.height = h;
+            sctx.clearRect(0,0,slice.width,slice.height);
+            sctx.drawImage(canvas, 0, Math.floor(y), canvas.width, h, 0, 0, slice.width, h);
 
-        let y = 0, pageIndex = 0;
-        while (y < canvas.height){
-          const h = Math.min(sliceHeightPx, canvas.height - y);
-          sliceCanvas.height = h;
-          sctx.clearRect(0,0,sliceCanvas.width,sliceCanvas.height);
-          sctx.drawImage(canvas, 0, y, canvas.width, h, 0, 0, sliceCanvas.width, h);
+            const imgData = slice.toDataURL("image/jpeg", 0.95);
+            if (pageIndex > 0) pdf.addPage();
+            pdf.addImage(imgData, "JPEG", 0, 0, pageW, pageH);
 
-          const imgData = sliceCanvas.toDataURL("image/jpeg", 0.95);
-          if (pageIndex > 0) pdf.addPage();
-
-          // مِلء الصفحة بالكامل
-          pdf.addImage(imgData, "JPEG", 0, 0, pageW, pageH);
-
-          y += h;
-          pageIndex++;
+            y += h - overlap; // تداخل بسيط
+            pageIndex++;
+          }
         }
 
-        // اسم الملف وتنزيل قوي
+        // تنزيل
         const raw = (document.getElementById("i-name")?.value || "CV").trim();
         const fname = (raw||"CV").replace(/[\\/:*?"<>|]+/g,"_").replace(/\s+/g,"_") + ".pdf";
         try{
@@ -441,7 +467,7 @@
             const dataUrl = pdf.output("dataurlstring");
             const w = window.open();
             if (w){ w.document.write('<iframe width="100%" height="100%" src="'+dataUrl+'"></iframe>'); }
-            else { alert("المتصفح منع التنزيل. افتح الصفحة في متصفح خارجي أو فعّل التنزيلات المنبثقة."); }
+            else { alert("المتصفح منع التنزيل."); }
           }
         }
 
