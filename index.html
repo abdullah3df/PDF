@@ -12,7 +12,8 @@
     :root{
       --bg:#0b1220; --bg2:#0d152b;
       --card:#111a2f; --card2:#0e1629;
-      --ink:#0e1320; --text:#e9eefb; --muted:#9fb0d6;
+      --ink:#0b1220; --ink2:#1a243a;
+      --text:#e9eefb; --muted:#9fb0d6;
       --brand:#3aa9ff; --brand2:#7ee787; --danger:#ff6b6b; --ok:#22c55e; --warn:#f59e0b;
       --ring: 0 0 0 2px rgb(58 169 255 / .25) inset;
       --radius:18px;
@@ -67,8 +68,9 @@
       background:linear-gradient(180deg,#0e1529,#0c1222);
       border:1px solid #273455;border-radius:16px;padding:16px
     }
+    /* أبعاد A4 منطقية على الشاشة (≈ 96dpi): 794×1123 */
     .sheet{
-      width:794px; min-height:1123px; margin:auto; background:var(--paper); color:var(--ink);
+      width:794px; min-height:1123px; margin:auto; background:var(--paper); color:#0d1426;
       border-radius:8px; box-shadow: 0 0 0 1px var(--border) inset, 0 10px 30px rgba(0,0,0,.2); overflow:hidden
     }
     @media (max-width: 820px){ .sheet{ width:100% } }
@@ -76,8 +78,8 @@
     .avatar{width:84px;height:84px;border-radius:50%;background:#d1d5db;overflow:hidden;border:3px solid rgba(255,255,255,.18)}
     .avatar img{width:100%;height:100%;object-fit:cover}
     .cv-titlebox{display:flex;flex-direction:column}
-    .cv-name{font-size:26px;font-weight:800;margin:0}
-    .cv-role{opacity:.92}
+    .cv-name{font-size:26px;font-weight:800;margin:0;color:#fff}
+    .cv-role{opacity:.95}
     .cv-body{display:grid;grid-template-columns:280px 1fr}
     @media (max-width: 720px){ .cv-body{grid-template-columns:1fr} }
     .cv-side{background:#f6f8fc;padding:18px}
@@ -85,11 +87,10 @@
     .block{margin-bottom:14px}
     .block h3{margin:0 0 6px;font-size:14px;color:#0b1325}
     .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px;margin:0 6px 6px 0}
-    .contact{font-size:13px;color:#111}
+    .contact{font-size:13px;color:#ffffffcc}
     .hr{height:1px;background:#e6eaf3;margin:10px 0}
     .footer-note{margin-top:18px;text-align:center;font-size:12px;color:var(--muted)}
 
-    /* طباعة اختيارية من المتصفح */
     @page{ size:A4; margin:10mm }
     @media print{
       body{ background:#fff }
@@ -97,7 +98,6 @@
       .sheet{ box-shadow:none !important }
     }
 
-    /* Overlay (تحميل/أخطاء) */
     .overlay{
       position:fixed; inset:0; display:none; align-items:center; justify-content:center;
       background:rgba(5,10,20,.55); z-index:99999; backdrop-filter: blur(2px);
@@ -223,8 +223,10 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- مكتبات موثوقة -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5fQp+f7YHnY0Xw3F7Yv4fZrF0w1F7f3Wj2R7gqk7wB1l2v7oV0Q4uQeQ7z7s1qkQ4zPq+v2k0QmJ1a9v4Zw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-NaWen3+e9Z1J8QFQiz0t2dXzKJ2r2y0q7mW4R8tXw0o1d8q1bL0QIRm6m1yYI8R1sQO9b7E5k9m6lA0a0yUpxA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <script>
     // ===== i18n =====
     const i18n = {
@@ -270,39 +272,18 @@
     };
 
     const $ = s => document.querySelector(s);
+
     function setLang(lang){
       const dict = i18n[lang] || i18n.ar;
       document.documentElement.lang = lang;
       document.documentElement.dir = dict.dir;
-      $("#t-app").textContent = dict["t-app"];
-      $("#t-sub").textContent = dict["t-sub"];
-      $("#t-lang").textContent = dict["t-lang"];
-      $("#t-form").textContent = dict["t-form"];
-      $("#t-form-hint").textContent = dict["t-form-hint"];
-      $("#l-name").textContent = dict["l-name"];
-      $("#l-role").textContent = dict["l-role"];
-      $("#l-city").textContent = dict["l-city"];
-      $("#l-phone").textContent = dict["l-phone"];
-      $("#l-email").textContent = dict["l-email"];
-      $("#l-website").textContent = dict["l-website"];
-      $("#l-summary").textContent = dict["l-summary"];
-      $("#l-exp").textContent = dict["l-exp"];
-      $("#l-edu").textContent = dict["l-edu"];
-      $("#l-skills").textContent = dict["l-skills"];
-      $("#l-photo").textContent = dict["l-photo"];
-      $("#t-photo-hint").textContent = dict["t-photo-hint"];
-      $("#t-update").textContent = dict["t-update"];
-      $("#t-download").textContent = dict["t-download"];
-      $("#t-clear").textContent = dict["t-clear"];
-      $("#t-preview").textContent = dict["t-preview"];
-      $("#t-skills-h").textContent = dict["t-skills-h"];
-      $("#t-summary-h").textContent = dict["t-summary-h"];
-      $("#t-exp-h").textContent = dict["t-exp-h"];
-      $("#t-edu-h").textContent = dict["t-edu-h"];
-      $("#t-local").textContent = dict["t-local"];
-      $("#ov-title").textContent = dict["ov-prep"];
-      $("#ov-msg").textContent = dict["ov-wait"];
-      // placeholders
+      // نصوص
+      [
+        "t-app","t-sub","t-lang","t-form","t-form-hint","l-name","l-role","l-city","l-phone",
+        "l-email","l-website","l-summary","l-exp","l-edu","l-skills","l-photo","t-photo-hint",
+        "t-update","t-download","t-clear","t-preview","t-skills-h","t-summary-h","t-exp-h","t-edu-h","t-local","ov-prep","ov-wait"
+      ].forEach(k=>{ const el = document.getElementById(k); if(el) el.textContent = dict[k]; });
+      // أماكن الإدخال
       $("#i-name").placeholder = dict["ph-name"];
       $("#i-role").placeholder = dict["ph-role"];
       $("#i-city").placeholder = dict["ph-city"];
@@ -310,16 +291,19 @@
       $("#i-email").placeholder = dict["ph-email"];
       $("#i-web").placeholder = dict["ph-web"];
       localStorage.setItem("cv-lang", lang);
-      // update UI pressed state
+      // حالة الأزرار
       $("#btn-ar").setAttribute("aria-pressed", lang==="ar");
       $("#btn-en").setAttribute("aria-pressed", lang==="en");
       $("#btn-de").setAttribute("aria-pressed", lang==="de");
+      // إعادة رسم المعاينة بعد تغيير اللغة
+      const data = load() || {};
+      render(data);
     }
     $("#btn-ar").onclick = ()=> setLang("ar");
     $("#btn-en").onclick = ()=> setLang("en");
     $("#btn-de").onclick = ()=> setLang("de");
 
-    // ===== Data & preview =====
+    // ===== Data handling =====
     function lines(v){ return (v||"").split(/\r?\n/).map(s=>s.trim()).filter(Boolean); }
     function tags(v){ return (v||"").split(",").map(s=>s.trim()).filter(Boolean); }
 
@@ -343,35 +327,63 @@
     function load(){
       try { return JSON.parse(localStorage.getItem("cv-data")) || null; } catch{ return null; }
     }
+
     function render(data){
-      $("#v-name").textContent = data.name || i18n[document.documentElement.lang]["ph-name"] || "Full Name";
-      $("#v-role").textContent = data.role || i18n[document.documentElement.lang]["ph-role"] || "Job Title";
-      const contact = [data.city, data.phone, data.email, data.web].filter(Boolean).join(" • ");
-      $("#v-contact").textContent = contact || "";
-      $("#v-summary").textContent = data.summary || (i18n[document.documentElement.lang]["t-summary-h"] + "...");
-      // skills
+      const lang = document.documentElement.lang || "ar";
+      const dict = i18n[lang] || i18n.ar;
+
+      $("#v-name").textContent = data.name || dict["ph-name"] || "Full Name";
+      $("#v-role").textContent = data.role || dict["ph-role"] || "Job Title";
+
+      // سطر التواصل — نظهره دائمًا إن وُجدت أي قيمة
+      const parts = [];
+      if (data.city) parts.push(data.city);
+      if (data.phone) parts.push(data.phone);
+      if (data.email) parts.push(data.email);
+      if (data.web) parts.push(data.web);
+      $("#v-contact").textContent = parts.join(" • ");
+
+      // الملخص
+      $("#v-summary").textContent = data.summary || (dict["t-summary-h"] + "...");
+
+      // المهارات
       const skillsBox = $("#v-skills"); skillsBox.innerHTML = "";
-      data.skills.forEach(s=>{ const t=document.createElement("span"); t.className="tag"; t.textContent=s; skillsBox.appendChild(t); });
-      // exp
+      (data.skills||[]).forEach(s=>{
+        const t=document.createElement("span"); t.className="tag"; t.textContent=s; skillsBox.appendChild(t);
+      });
+
+      // الخبرات
       const expV = $("#v-exp"); expV.innerHTML="";
-      data.exp.forEach(line=>{ const p=document.createElement("p"); p.style.margin="0 0 6px"; p.textContent=line; expV.appendChild(p); });
-      // edu
+      (data.exp||[]).forEach(line=>{
+        const p=document.createElement("p"); p.style.margin="0 0 6px"; p.style.color= "#0b1325"; p.textContent=line; expV.appendChild(p);
+      });
+
+      // التعليم
       const eduV = $("#v-edu"); eduV.innerHTML="";
-      data.edu.forEach(line=>{ const p=document.createElement("p"); p.style.margin="0 0 6px"; p.textContent=line; eduV.appendChild(p); });
-      // photo
+      (data.edu||[]).forEach(line=>{
+        const p=document.createElement("p"); p.style.margin="0 0 6px"; p.style.color= "#0b1325"; p.textContent=line; eduV.appendChild(p);
+      });
+
+      // الصورة
       const av = $("#v-avatar");
       av.innerHTML = data.photo ? `<img src="${data.photo}" alt="photo" />` : "";
     }
 
+    // تحديث حيّ أثناء الكتابة + زر تحديث
+    const inputsToWatch = ["i-name","i-role","i-city","i-phone","i-email","i-web","i-summary","i-exp","i-edu","i-skills"];
+    inputsToWatch.forEach(id=>{
+      const el = document.getElementById(id);
+      el.addEventListener("input", ()=>{ const d=save(); render(d); });
+    });
     $("#btn-update").onclick = ()=>{ const d=save(); render(d); };
 
     $("#btn-clear").onclick = ()=>{
-      ["i-name","i-role","i-city","i-phone","i-email","i-web","i-summary","i-exp","i-edu","i-skills"].forEach(id=>{ $("#"+id).value=""; });
+      inputsToWatch.forEach(id=>{ $("#"+id).value=""; });
       localStorage.removeItem("cv-data"); localStorage.removeItem("cv-photo");
       render(save());
     };
 
-    // photo upload with downscale
+    // رفع الصورة مع تصغير
     $("#i-photo").addEventListener("change", async (e)=>{
       const f = e.target.files && e.target.files[0]; if(!f) return;
       const dataUrl = await readAndDownscaleImage(f, 1200);
@@ -399,7 +411,7 @@
       });
     }
 
-    // ===== PDF Export (multipage, mobile-safe) =====
+    // ===== Overlay =====
     const overlay = $("#overlay"), ovTitle=$("#ov-title"), ovMsg=$("#ov-msg");
     function showOverlay(title, msg, spin=true){
       overlay.classList.add("show");
@@ -408,61 +420,110 @@
     }
     function hideOverlay(){ overlay.classList.remove("show"); }
 
+    // ===== PDF Export (A4 حقيقي + تقطيع صفحات) =====
     $("#btn-download").onclick = async ()=>{
       const lang = document.documentElement.lang || "ar";
       const dict = i18n[lang] || i18n.ar;
       showOverlay(dict["ov-export"], dict["ov-wait"], true);
 
-      // wait fonts
-      if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch{} }
-
-      // clone sheet (visible but hidden for capture)
-      const sheet = $("#sheet");
-      const clone = sheet.cloneNode(true);
-      clone.setAttribute("dir", document.documentElement.dir);
-      Object.assign(clone.style,{
-        position:"fixed", left:"0", top:"0", background:"#fff", width: sheet.offsetWidth+"px",
-        visibility:"hidden", pointerEvents:"none", transform:"none", filter:"none", display:"block", zIndex:999999
-      });
-      document.body.appendChild(clone);
-      void clone.offsetHeight;
-
       try{
-        // استخدام مكتبة jsPDF الصحيحة
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ unit:"pt", format:"a4", orientation:"portrait" });
-        
-        // استخدام html2canvas مباشرة
+        // تأكد من تحميل الخطوط
+        if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch{} }
+
+        // تجهيز نسخة مرئية مخفية للالتقاط
+        const sheet = $("#sheet");
+        const clone = sheet.cloneNode(true);
+        clone.setAttribute("dir", document.documentElement.dir);
+        Object.assign(clone.style,{
+          position:"fixed", left:"0", top:"0",
+          background:"#ffffff", color:"#0b1220",
+          width: sheet.offsetWidth+"px",
+          visibility:"hidden", pointerEvents:"none", transform:"none", filter:"none", display:"block", zIndex: -1
+        });
+        document.body.appendChild(clone);
+        void clone.offsetHeight;
+
+        // انتظر الصور داخل النسخة
+        await waitImages(clone);
+
+        // التقط بـ html2canvas بدقة مناسبة للجوال والكمبيوتر
+        const scale = Math.min(2, Math.max(1.5, (window.devicePixelRatio||1)));
         const canvas = await html2canvas(clone, {
-          scale: 2,
+          scale,
           useCORS: true,
           backgroundColor: "#ffffff",
-          logging: false
+          logging: false,
+          removeContainer: true,
+          windowWidth: clone.scrollWidth,
+          windowHeight: clone.scrollHeight
         });
-        
-        const imgData = canvas.toDataURL("image/jpeg", 0.95);
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        
-        // إضافة الصورة كصفحة واحدة (يمكن تعديلها لتعدد الصفحات إذا لزم الأمر)
-        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-        
+
+        // إعداد jsPDF A4 (نقطة pt)
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ unit:"pt", format:"a4", orientation:"portrait" });
+        const pageWidth  = pdf.internal.pageSize.getWidth();   // 595.28
+        const pageHeight = pdf.internal.pageSize.getHeight();  // 841.89
+
+        // حول الـ canvas إلى صور متعددة الصفحات إن لزم
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        if (imgHeight <= pageHeight){
+          const imgData = canvas.toDataURL("image/jpeg", 0.95);
+          pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+        } else {
+          // تقطيع رأسي للكانفس على ارتفاع صفحة
+          const onePageCanvas = document.createElement("canvas");
+          const ctx = onePageCanvas.getContext("2d");
+          onePageCanvas.width = canvas.width;
+          const pageCanvasHeight = Math.floor((pageHeight * canvas.width) / pageWidth);
+
+          let renderedY = 0;
+          let pageIndex = 0;
+          while (renderedY < canvas.height){
+            const sliceHeight = Math.min(pageCanvasHeight, canvas.height - renderedY);
+            onePageCanvas.height = sliceHeight;
+            ctx.clearRect(0, 0, onePageCanvas.width, onePageCanvas.height);
+            ctx.drawImage(canvas, 0, renderedY, canvas.width, sliceHeight, 0, 0, onePageCanvas.width, sliceHeight);
+            const imgData = onePageCanvas.toDataURL("image/jpeg", 0.95);
+            if (pageIndex === 0){
+              pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, (sliceHeight * imgWidth) / onePageCanvas.width);
+            } else {
+              pdf.addPage();
+              pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, (sliceHeight * imgWidth) / onePageCanvas.width);
+            }
+            renderedY += sliceHeight;
+            pageIndex++;
+          }
+        }
+
         const fname = (($("#i-name").value || "CV").trim().replace(/\s+/g,"_")) + ".pdf";
         pdf.save(fname);
-        
-        ovTitle.textContent = dict["ov-done"]; 
-        $("#ov-spin").style.display="none"; 
+
+        ovTitle.textContent = dict["ov-done"];
+        $("#ov-spin").style.display="none";
         ovMsg.textContent = "";
-        setTimeout(hideOverlay, 800);
+        setTimeout(hideOverlay, 700);
+
+        clone.remove();
       }catch(err){
         console.error(err);
-        alert(dict["err-export"]);
+        alert((i18n[document.documentElement.lang]||i18n.ar)["err-export"]);
         hideOverlay();
-      }finally{
-        try{ clone.remove(); }catch{}
       }
     };
+
+    function waitImages(root){
+      const imgs = Array.from(root.querySelectorAll("img"));
+      if (imgs.length === 0) return Promise.resolve();
+      return Promise.all(imgs.map(img=>{
+        if (img.complete && img.naturalWidth) return Promise.resolve();
+        return new Promise(res=>{
+          img.onload = ()=>res();
+          img.onerror = ()=>res(); // لا توقف التصدير لو فشلت صورة
+        });
+      }));
+    }
 
     // ===== Init =====
     (function init(){
