@@ -246,7 +246,7 @@
 
 <div class="footer">© <span id="year"></span> — موقع خدمات PDF & CV — نسخة مبدئية جاهزة للتطوير</div>
 
-  </div>  <!-- Libraries -->  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>  <script>
+  </div>  <!-- Libraries -->  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>  <script>
     // ===== Tabs =====
     const tabs = document.querySelectorAll('.tab-btn');
     const panels = {
@@ -322,7 +322,7 @@
       const merged = await PDFDocument.create();
       for(const f of mergeFiles){
         const bytes = await f.arrayBuffer();
-        const src = await PDFDocument.load(bytes);
+        const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
         const pages = await merged.copyPages(src, src.getPageIndices());
         pages.forEach(p=>merged.addPage(p));
       }
@@ -355,7 +355,7 @@
       if(!file) return alert('اختر ملف PDF');
       const bytes = await file.arrayBuffer();
       const { PDFDocument } = PDFLib;
-      const src = await PDFDocument.load(bytes);
+      const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
       const total = src.getPageCount();
       const indices = ranges ? parseRanges(ranges, total) : src.getPageIndices();
       if(!indices.length) return alert('لا توجد صفحات مطابقة للنطاق');
@@ -377,10 +377,10 @@
       if(!files || !files.length) return alert('اختر صورًا أولاً');
       const paper = document.getElementById('paper').value;
       const fit = document.getElementById('fit').value; // contain | cover
-      const { jsPDF } = window.jspdf || {};
+      const { jsPDF } = window.jspdf;
 
       // إذا لم تتوفر jsPDF من html2pdf، ننشئ مثيل يدويًا
-      const pdf = new window.jspdf.jsPDF({ unit:'pt', format:[sizeMap[paper].w, sizeMap[paper].h], orientation:'portrait' });
+      const pdf = new jsPDF({ unit:'pt', format:[sizeMap[paper].w, sizeMap[paper].h], orientation:'portrait' });
 
       for(let i=0;i<files.length;i++){
         const img = await fileToImage(files[i]);
@@ -461,7 +461,7 @@
     document.getElementById('cv-download').onclick = ()=>{
       const sheet = document.getElementById('cv-sheet');
       const name = ($('#cv-name').value.trim() || 'CV');
-      const opt = { filename: `${name.replace(/\s+/g,'_')}.pdf`, margin: 0, image:{ type:'jpeg', quality: 0.98 }, html2canvas:{ scale: 2, useCORS:true }, jsPDF:{ unit:'pt', format:'a4', orientation:'portrait' } };
+      const opt = { filename: `${name.replace(/\s+/g,'_')}.pdf`, margin: 0, image:{ type:'jpeg', quality: 0.98 }, html2canvas:{ scale: 3, useCORS:true }, jsPDF:{ unit:'pt', format:'a4', orientation:'portrait' } };
       html2pdf().set(opt).from(sheet).save();
     };
 
