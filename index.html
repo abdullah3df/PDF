@@ -16,7 +16,6 @@
       --text:#e9eefb; --muted:#9fb0d6;
       --brand:#3aa9ff; --brand2:#7ee787; --danger:#ff6b6b; --ok:#22c55e; --warn:#f59e0b;
       --ring: 0 0 0 2px rgb(58 169 255 / .25) inset;
-      --radius:18px;
       --paper:#ffffff; --border:#e9edf5;
     }
     *{box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact}
@@ -26,7 +25,6 @@
       color:var(--text);
       font-family: "Cairo", "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Arabic", sans-serif;
     }
-    a{ color:var(--brand); text-decoration:none }
     .container{max-width:1200px;margin:auto;padding:18px}
     .topbar{
       display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -62,7 +60,6 @@
     .btn.brand{background:linear-gradient(180deg,#1a6eff,#1147ff);border-color:#2f55ff}
     .btn.good{background:linear-gradient(180deg,#15803d,#166534);border-color:#2e7d32}
     .btn.warn{background:linear-gradient(180deg,#d97706,#b45309);border-color:#b45309}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
     .hint{font-size:12px;color:#a9b6d7}
     .cv{
       background:linear-gradient(180deg,#0e1529,#0c1222);
@@ -238,7 +235,8 @@
         "l-exp":"الخبرات (سطر لكل خبرة)","l-edu":"التعليم","l-skills":"المهارات (مفصولة بفواصل)","l-photo":"الصورة (اختياري)",
         "t-photo-hint":"يتم تصغير الصورة تلقائيًا لتحسين الأداء.",
         "t-update":"تحديث المعاينة","t-download":"تنزيل PDF","t-clear":"تفريغ",
-        "t-preview":"المعاينة","t-skills-h":"المهارات","t-summary-h":"الملخص","t-exp-h":"الخبرات","t-edu-h":"التعليم","t-local":"* يتم الحفظ محليًا في متصفحك.",
+        "t-preview":"المعاينة","ت-skills-h":"المهارات","t-skills-h":"المهارات","t-summary-h":"الملخص","t-exp-h":"الخبرات","t-edu-h":"التعليم",
+        "t-local":"* يتم الحفظ محليًا في متصفحك.",
         "ph-name":"الاسم الكامل","ph-role":"مثال: مطوّر واجهات","ph-city":"مثال: برلين، ألمانيا","ph-phone":"+49 0000 000000","ph-email":"you@example.com","ph-web":"linkedin.com/in/you",
         "ov-prep":"يتم التحضير…","ov-wait":"انتظر قليلًا من فضلك.","ov-export":"توليد PDF…","ov-done":"تمّ التحميل ✅",
         "err-export":"حدثت مشكلة أثناء توليد PDF. جرّب ثانية أو قلل حجم الصور."
@@ -410,39 +408,75 @@
     }
     function hideOverlay(){ overlay.classList.remove("show"); }
 
-    // ===== PDF Export (A4 + Multi-Page) مع 3 مسارات تنزيل =====
-    $("#btn-download").onclick = async ()=>{
+    // ===== PDF Export (A4 + Multi-Page) — يمنع PDF الفارغ ويضمن التنزيل =====
+    document.getElementById("btn-download").onclick = async ()=>{
       const lang = document.documentElement.lang || "ar";
       const dict = i18n[lang] || i18n.ar;
       showOverlay(dict["ov-export"] || "Generating PDF…", dict["ov-wait"] || "Please wait…", true);
 
       try{
+        // احفظ وارسم أحدث مدخلات
+        render(save());
+
+        // انتظر الخطوط
         if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch{} }
 
-        const sheet = $("#sheet");
+        // نسخة مرئية خارج الشاشة (لا نستخدم visibility:hidden)
+        const sheet = document.getElementById("sheet");
         const clone = sheet.cloneNode(true);
         clone.setAttribute("dir", document.documentElement.dir);
         Object.assign(clone.style,{
-          position:"fixed", left:"0", top:"0",
-          background:"#ffffff", color:"#0b1220",
-          width: sheet.offsetWidth+"px",
-          visibility:"hidden", pointerEvents:"none", transform:"none", filter:"none", display:"block", zIndex: -1
+          position:"fixed",
+          left:"-10000px",
+          top:"0",
+          width: sheet.offsetWidth + "px",
+          background:"#ffffff",
+          color:"#0b1220",
+          opacity:"1",
+          pointerEvents:"none",
+          transform:"none",
+          filter:"none",
+          display:"block",
+          zIndex: 9999
         });
         document.body.appendChild(clone);
+        void clone.offsetHeight;
+
+        // انتظر الصور
+        const waitImages = async (root)=>{
+          const imgs = Array.from(root.querySelectorAll("img"));
+          if (!imgs.length) return;
+          await Promise.all(imgs.map(img=>{
+            if (img.complete && img.naturalWidth) return;
+            return new Promise(res=>{ img.onload=res; img.onerror=res; });
+          }));
+        };
         await waitImages(clone);
 
+        // التقط بخلفية بيضاء
         const scale = Math.min(2, Math.max(1.5, (window.devicePixelRatio||1)));
         const canvas = await html2canvas(clone, {
           scale,
           useCORS: true,
+          allowTaint: true,
           backgroundColor: "#ffffff",
           logging: false,
           removeContainer: true,
           windowWidth: clone.scrollWidth,
           windowHeight: clone.scrollHeight
         });
-        clone.remove();
 
+        // أزل النسخة
+        try{ clone.remove(); }catch{}
+
+        // تأكد من أن الكانفس ليس فارغًا
+        if (!canvas || !canvas.width || !canvas.height){
+          hideOverlay();
+          alert("حدثت مشكلة في الالتقاط (Canvas فارغ). أعد المحاولة بعد إعادة تحميل الصفحة.");
+          return;
+        }
+
+        // بناء PDF A4 (مع التقطيع إن لزم)
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ unit:"pt", format:"a4", orientation:"portrait" });
         const pageW = pdf.internal.pageSize.getWidth();
@@ -458,7 +492,6 @@
           const ctx = one.getContext("2d");
           one.width = canvas.width;
           const sliceH = Math.floor((pageH * canvas.width) / pageW);
-
           let y = 0, page = 0;
           while (y < canvas.height){
             const h = Math.min(sliceH, canvas.height - y);
@@ -472,42 +505,36 @@
           }
         }
 
-        const raw = ($("#i-name").value || "CV").trim();
+        // اسم الملف
+        const raw = (document.getElementById("i-name")?.value || "CV").trim();
         const fname = (raw || "CV").replace(/[\\/:*?"<>|]+/g,"_").replace(/\s+/g,"_") + ".pdf";
 
-        // مسار 1: Blob + رابط خفي
+        // مسار 1: Blob
         try{
           const blob = pdf.output("blob");
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
-          a.href = url;
-          a.download = fname;
-          a.style.display = "none";
-          document.body.appendChild(a);
-          a.click();
+          a.href = url; a.download = fname; a.style.display="none";
+          document.body.appendChild(a); a.click();
           setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1200);
         }catch(e1){
           // مسار 2: dataURI
           try{
             const dataUrl = pdf.output("datauristring");
             const a = document.createElement("a");
-            a.href = dataUrl;
-            a.download = fname;
-            a.style.display="none";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
+            a.href = dataUrl; a.download = fname; a.style.display="none";
+            document.body.appendChild(a); a.click(); a.remove();
           }catch(e2){
-            // مسار 3: فتح في تبويب جديد (iOS/ويب فيو)
+            // مسار 3: فتح في تبويب جديد
             const dataUrl = pdf.output("dataurlstring");
             const w = window.open();
-            if (w) { w.document.write('<iframe width="100%" height="100%" src="'+dataUrl+'"></iframe>'); }
-            else { alert("يبدو أن المتصفح منع التنزيل. افتح الصفحة في متصفح خارجي أو فعّل التنزيلات المنبثقة."); }
+            if (w){ w.document.write('<iframe width="100%" height="100%" src="'+dataUrl+'"></iframe>'); }
+            else { alert("المتصفح منع التنزيل. افتح الصفحة في متصفح خارجي أو فعّل التنزيلات المنبثقة."); }
           }
         }
 
         ovTitle.textContent = dict["ov-done"] || "Done";
-        $("#ov-spin").style.display="none";
+        document.getElementById("ov-spin").style.display="none";
         ovMsg.textContent = "";
         setTimeout(hideOverlay, 700);
 
@@ -517,18 +544,6 @@
         hideOverlay();
       }
     };
-
-    function waitImages(root){
-      const imgs = Array.from(root.querySelectorAll("img"));
-      if (imgs.length === 0) return Promise.resolve();
-      return Promise.all(imgs.map(img=>{
-        if (img.complete && img.naturalWidth) return Promise.resolve();
-        return new Promise(res=>{
-          img.onload = ()=>res();
-          img.onerror = ()=>res();
-        });
-      }));
-    }
 
     // ===== Init =====
     (function init(){
