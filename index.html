@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>خدمات PDF & CV — موقع متكامل بملف واحد (نسخة مُصحَّحة)</title>
-  <meta name="description" content="أدوات PDF (دمج، تقسيم، صور→PDF) ومنشئ سيرة ذاتية مع تصدير PDF — يعمل داخل المتصفح.">
+  <title>خدمات PDF & CV — ملف واحد (مصحّح نهائي)</title>
+  <meta name="description" content="أدوات PDF (دمج، تقسيم، صور→PDF) ومنشئ سيرة ذاتية مع تصدير PDF — يعمل بالكامل داخل المتصفح.">
 
   <style>
     :root { --bg:#0b1220; --card:#121a2b; --muted:#93a4c7; --text:#e9eefb; --brand:#3aa9ff; --brand-2:#7ee787; --danger:#ff6b6b; --accent:#ffd166; --radius:18px; }
@@ -336,7 +336,6 @@
     // ===== IMAGES → PDF =====
     const sizeMap = { a4:{ w:595.28, h:841.89 }, letter:{ w:612, h:792 } };
 
-    // تصغير اختياري للصور الكبيرة لتجنّب استهلاك الذاكرة
     function downscaleImage(img, maxSide=2200){
       const max = Math.max(img.width, img.height);
       if(max <= maxSide) return img;
@@ -436,38 +435,65 @@
       syncPreview();
     };
 
-    // تنزيل CV كـ PDF — مسار يدوي (html2canvas داخل البندل) + احتياطي html2pdf
+    // ===== تنزيل CV كـ PDF (بدون صفحات بيضاء) =====
     document.getElementById('cv-download').onclick = async function(){
       const sheet = document.getElementById('cv-sheet');
       const nameInput = document.getElementById('cv-name');
       const fileName = (slugifyName((nameInput && nameInput.value) || 'CV') + '.pdf');
 
-      // انتظار الخطوط يقلل فرص الصفحة البيضاء
       if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch(_) {} }
 
-      // نسخة داخل الـ viewport (غير مرئية) لتجنب مشاكل iOS/Safari
+      // نسخة داخل الـ viewport لكن بدون شفافية
       const clone = sheet.cloneNode(true);
       clone.setAttribute('dir','rtl');
-      clone.style.position = 'fixed';
-      clone.style.left = '0';
-      clone.style.top = '0';
-      clone.style.opacity = '0';
-      clone.style.pointerEvents = 'none';
-      clone.style.transform = 'none';
-      clone.style.background = '#ffffff';
-      clone.style.width = sheet.offsetWidth + 'px';
-      clone.style.display = 'block';
+      Object.assign(clone.style, {
+        position: 'fixed',
+        left: '0',
+        top: '0',
+        transform: 'none',
+        filter: 'none',
+        visibility: 'hidden',     // بدل opacity:0
+        pointerEvents: 'none',
+        background: '#ffffff',
+        width: sheet.offsetWidth + 'px',
+        display: 'block',
+        zIndex: 999999
+      });
       document.body.appendChild(clone);
       void clone.offsetHeight;
 
       const cleanup = ()=>{ try{ clone.remove(); }catch(_){} };
 
       try{
-        // استخدم html2canvas من داخل html2pdf.bundle
-        if (window.jspdf && window.jspdf.jsPDF && window.html2pdf && window.html2pdf().set) {
-          const jsPDF = window.jspdf.jsPDF;
+        // نستخدم html2canvas المضمّن في bundle عبر html2pdf
+        if (window.html2pdf && window.jspdf && window.jspdf.jsPDF) {
+          const canvas = await window.html2canvas(clone, {
+            scale: Math.min(2, (window.devicePixelRatio || 2)),
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            windowWidth: clone.scrollWidth || clone.offsetWidth,
+            windowHeight: clone.scrollHeight || clone.offsetHeight
+          });
 
-          // نولّد canvas يدويًا عبر html2pdf options
+          const imgData = canvas.toDataURL('image/jpeg', 0.98);
+          const pdf = new window.jspdf.jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
+
+          const pageW = pdf.internal.pageSize.getWidth();
+          const pageH = pdf.internal.pageSize.getHeight();
+          const imgW = canvas.width, imgH = canvas.height;
+          const ratio = Math.min(pageW / imgW, pageH / imgH);
+          const renderW = imgW * ratio, renderH = imgH * ratio;
+          const offsetX = (pageW - renderW) / 2, offsetY = (pageH - renderH) / 2;
+
+          pdf.addImage(imgData, 'JPEG', offsetX, offsetY, renderW, renderH);
+          pdf.save(fileName);
+          cleanup();
+          return;
+        }
+
+        // احتياطي: html2pdf مباشرة
+        if (window.html2pdf) {
           await window.html2pdf().set({
             filename: fileName,
             margin: 0,
@@ -477,7 +503,7 @@
               useCORS: true,
               backgroundColor: '#ffffff',
               windowWidth: clone.scrollWidth || clone.offsetWidth,
-              windowHeight: clone.scrollHeight || clone.offsetHeight,
+              windowHeight: clone.scrollHeight || clone.offsetHeight
             },
             jsPDF: { unit:'pt', format:'a4', orientation:'portrait' }
           }).from(clone).save();
@@ -523,16 +549,6 @@
       renderAvatar();
       syncPreview();
     })();
-
-    // ===== صور → PDF: توابع مساعدة =====
-    function fileToImage(file){
-      return new Promise(function(resolve,reject){
-        const reader = new FileReader();
-        reader.onload = function(){ const img = new Image(); img.onload=function(){ resolve(img); }; img.onerror=reject; img.src = reader.result; };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
   </script>
 </body>
 </html>
