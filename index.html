@@ -226,8 +226,9 @@
     </div>
   </div>
 
-  <!-- Single library bundle (includes html2canvas + jsPDF) -->
-  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+  <!-- استخدام مكتبات منفصلة بدلاً من html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     // ===== i18n =====
     const i18n = {
@@ -431,53 +432,33 @@
       document.body.appendChild(clone);
       void clone.offsetHeight;
 
-      const jsPDF = window.jspdf && window.jspdf.jsPDF ? window.jspdf.jsPDF : window.jspPDF; // from bundle
-      const pageWpt = 595.28; // A4 width in pt (72dpi) ~ 210mm
-      const pageHpt = 841.89; // A4 height in pt
-
-      // adaptive scale (mobile lower)
-      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-      const tryScales = isMobile ? [1.2, 1.0] : [2, 1.5, 1.2];
-
       try{
-        let canvas = null, scaleUsed = 1;
-        for(const sc of tryScales){
-          try{
-            canvas = await window.html2canvas(clone,{ scale: sc, useCORS:true, allowTaint:true, backgroundColor:"#ffffff",
-              windowWidth: clone.scrollWidth||clone.offsetWidth, windowHeight: clone.scrollHeight||clone.offsetHeight });
-            scaleUsed = sc;
-            break;
-          }catch(e){ /* try lower */ }
-        }
-        if(!canvas) throw new Error("html2canvas_failed");
-
-        // slice canvas into A4 pages (px)
-        const pxPerPt = canvas.width / (sheet.offsetWidth || canvas.width); // pixels for 1 point horizontally
-        const pageHpx = Math.floor(pageHpt * pxPerPt);
-
+        // استخدام مكتبة jsPDF الصحيحة
+        const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ unit:"pt", format:"a4", orientation:"portrait" });
-        let y = 0, pageIndex = 0;
-        while(y < canvas.height){
-          const sliceH = Math.min(pageHpx, canvas.height - y);
-          const slice = document.createElement("canvas");
-          slice.width = canvas.width; slice.height = sliceH;
-          const sctx = slice.getContext("2d");
-          // draw part
-          sctx.drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-          const img = slice.toDataURL("image/jpeg", 0.95);
-
-          if(pageIndex === 0){
-            pdf.addImage(img, "JPEG", 0, 0, pageWpt, pageHpt);
-          }else{
-            pdf.addPage("a4", "portrait");
-            pdf.addImage(img, "JPEG", 0, 0, pageWpt, pageHpt);
-          }
-          pageIndex++; y += sliceH;
-        }
-
+        
+        // استخدام html2canvas مباشرة
+        const canvas = await html2canvas(clone, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          logging: false
+        });
+        
+        const imgData = canvas.toDataURL("image/jpeg", 0.95);
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        // إضافة الصورة كصفحة واحدة (يمكن تعديلها لتعدد الصفحات إذا لزم الأمر)
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+        
         const fname = (($("#i-name").value || "CV").trim().replace(/\s+/g,"_")) + ".pdf";
         pdf.save(fname);
-        ovTitle.textContent = dict["ov-done"]; $("#ov-spin").style.display="none"; ovMsg.textContent = "";
+        
+        ovTitle.textContent = dict["ov-done"]; 
+        $("#ov-spin").style.display="none"; 
+        ovMsg.textContent = "";
         setTimeout(hideOverlay, 800);
       }catch(err){
         console.error(err);
