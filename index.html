@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -6,18 +7,8 @@
   <meta name="description" content="موقع يقدم أدوات PDF (دمج، تقسيم، صور→PDF) ومنشئ سيرة ذاتية مع تصدير PDF — يعمل بالكامل داخل المتصفح.">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <style>
-    :root {
-      --bg: #0b1220;
-      --card: #121a2b;
-      --muted: #93a4c7;
-      --text: #e9eefb;
-      --brand: #3aa9ff;
-      --brand-2:#7ee787;
-      --danger:#ff6b6b;
-      --accent:#ffd166;
-      --radius: 18px;
-    }
-    *{box-sizing:border-box}
+    :root { --bg:#0b1220; --card:#121a2b; --muted:#93a4c7; --text:#e9eefb; --brand:#3aa9ff; --brand-2:#7ee787; --danger:#ff6b6b; --accent:#ffd166; --radius:18px; }
+    *{box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact}
     body{margin:0;background:linear-gradient(180deg,var(--bg),#0d1426 35%,#0a0f1d 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Noto Sans Arabic",Tahoma,Arial,sans-serif}
     a{color:var(--brand)}
     .container{max-width:1180px;margin:auto;padding:24px}
@@ -26,51 +17,42 @@
     .logo-badge{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,var(--brand),#6dd3ff 40%,#0049ff)}
     .tabs{display:flex;gap:8px;flex-wrap:wrap}
     .tab-btn{border:1px solid #223050;background:#0e1626;color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;transition:0.2s}
-    .tab-btn[aria-selected="true"], .tab-btn:hover{background:linear-gradient(180deg,#12213b,#0e1626);border-color:#2a3a5d;box-shadow:0 0 0 2px rgb(58 169 255 / .18) inset}.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:18px}
-@media (max-width: 980px){.grid{grid-template-columns:1fr}}
-
-.card{background:linear-gradient(180deg,#0f1730,#0c1326);border:1px solid #243354;border-radius:var(--radius);padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-.card h2{margin:0 0 6px;font-size:20px}
-.muted{color:var(--muted);font-size:13px}
-
-.panel{display:none}
-.panel.active{display:block;animation:fade .25s ease}
-@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-
-.drop{border:1.5px dashed #35507f;border-radius:14px;padding:18px;text-align:center;background:#0e1628}
-.drop input{display:none}
-.drop label{display:inline-block;padding:10px 14px;border-radius:10px;background:#13213a;border:1px solid #2b3e66;cursor:pointer}
-
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid #2b3e66;background:#14223b;color:var(--text);cursor:pointer}
-.btn.brand{background:linear-gradient(180deg,#1a6eff,#1147ff);border-color:#2f55ff}
-.btn.good{background:linear-gradient(180deg,#15803d,#166534);border-color:#2e7d32}
-.btn.danger{background:linear-gradient(180deg,#b91c1c,#7f1d1d);border-color:#7f1d1d}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-
-.list{margin:10px 0 0;padding:0;list-style:none;max-height:180px;overflow:auto;border:1px solid #223356;border-radius:12px}
-.list li{padding:8px 12px;border-bottom:1px solid #1d2a45;font-size:14px;display:flex;justify-content:space-between;gap:10px}
-.list li:last-child{border-bottom:0}
-
-.field{display:flex;flex-direction:column;gap:6px;margin:8px 0}
-.field input,.field textarea, .field select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2b3e66;background:#0e1628;color:var(--text)}
-.field textarea{min-height:110px;resize:vertical}
-
-.cv{background:linear-gradient(180deg,#0e1529,#0c1222);border:1px solid #273455;border-radius:16px;padding:18px}
-.cv .sheet{width:794px; /* A4 at 96dpi */ min-height:1123px;background:#ffffff;color:#0d1321;margin:auto;border-radius:8px;box-shadow:0 0 0 1px #e6eaf3 inset;overflow:hidden}
-@media (max-width: 820px){.cv .sheet{width:100%}}
-.cv-header{display:flex;gap:16px;align-items:center;padding:22px 26px;background:linear-gradient(90deg,#0b1220 0%,#133869 100%);color:#fff}
-.avatar{width:84px;height:84px;border-radius:50%;background:#d1d5db;overflow:hidden;border:3px solid rgba(255,255,255,.18)}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.cv-body{display:grid;grid-template-columns:280px 1fr}
-@media (max-width: 720px){.cv-body{grid-template-columns:1fr}}
-.cv-side{background:#f6f8fc;padding:18px}
-.cv-main{padding:22px}
-.tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px;margin:0 4px 6px 0}
-.skill{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden}
-.skill > span{display:block;height:100%;background:#2563eb}
-
-.footer{margin-top:28px;text-align:center;font-size:12px;color:var(--muted)}
-
+    .tab-btn[aria-selected="true"], .tab-btn:hover{background:linear-gradient(180deg,#12213b,#0e1626);border-color:#2a3a5d;box-shadow:0 0 0 2px rgb(58 169 255 / .18) inset}
+    .grid{display:grid;grid-template-columns:1.15fr 1fr;gap:18px}
+    @media (max-width: 980px){.grid{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg,#0f1730,#0c1326);border:1px solid #243354;border-radius:var(--radius);padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .card h2{margin:0 0 6px;font-size:20px}
+    .muted{color:var(--muted);font-size:13px}
+    .panel{display:none}
+    .panel.active{display:block;animation:fade .25s ease}
+    @keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+    .drop{border:1.5px dashed #35507f;border-radius:14px;padding:18px;text-align:center;background:#0e1628}
+    .drop input{display:none}
+    .drop label{display:inline-block;padding:10px 14px;border-radius:10px;background:#13213a;border:1px solid #2b3e66;cursor:pointer}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid #2b3e66;background:#14223b;color:var(--text);cursor:pointer}
+    .btn.brand{background:linear-gradient(180deg,#1a6eff,#1147ff);border-color:#2f55ff}
+    .btn.good{background:linear-gradient(180deg,#15803d,#166534);border-color:#2e7d32}
+    .btn.danger{background:linear-gradient(180deg,#b91c1c,#7f1d1d);border-color:#7f1d1d}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .list{margin:10px 0 0;padding:0;list-style:none;max-height:200px;overflow:auto;border:1px solid #223356;border-radius:12px}
+    .list li{padding:8px 12px;border-bottom:1px solid #1d2a45;font-size:14px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .list li:last-child{border-bottom:0}
+    .list .actions{display:flex;gap:6px}
+    .field{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+    .field input,.field textarea, .field select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #2b3e66;background:#0e1628;color:var(--text)}
+    .field textarea{min-height:110px;resize:vertical}
+    .cv{background:linear-gradient(180deg,#0e1529,#0c1222);border:1px solid #273455;border-radius:16px;padding:18px}
+    .cv .sheet{width:794px; min-height:1123px;background:#ffffff;color:#0d1321;margin:auto;border-radius:8px;box-shadow:0 0 0 1px #e6eaf3 inset;overflow:hidden}
+    @media (max-width: 820px){.cv .sheet{width:100%}}
+    .cv-header{display:flex;gap:16px;align-items:center;padding:22px 26px;background:linear-gradient(90deg,#0b1220 0%,#133869 100%);color:#fff}
+    .avatar{width:84px;height:84px;border-radius:50%;background:#d1d5db;overflow:hidden;border:3px solid rgba(255,255,255,.18)}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .cv-body{display:grid;grid-template-columns:280px 1fr}
+    @media (max-width: 720px){.cv-body{grid-template-columns:1fr}}
+    .cv-side{background:#f6f8fc;padding:18px}
+    .cv-main{padding:22px}
+    .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px;margin:0 4px 6px 0}
+    .footer{margin-top:28px;text-align:center;font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -85,195 +67,160 @@
         <button class="tab-btn" data-tab="cv">منشئ السيرة الذاتية</button>
         <button class="tab-btn" data-tab="about">التعريف & التسعير</button>
       </div>
-    </div><!-- PDF TOOLS PANEL -->
-<section id="panel-pdf" class="panel active">
-  <div class="grid">
-    <div class="card">
-      <h2>دمج ملفات PDF</h2>
-      <p class="muted">ارفع عدة ملفات PDF بترتيبك ثم اضغط دمج.</p>
-      <div class="drop" id="merge-drop">
-        <input type="file" id="merge-input" accept="application/pdf" multiple>
-        <label for="merge-input">اختر ملفات PDF</label>
-        <ul id="merge-list" class="list" aria-live="polite"></ul>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <button class="btn brand" id="merge-btn">دمـج وتحميل</button>
-        <button class="btn" id="merge-clear">تفريغ</button>
-      </div>
     </div>
 
-    <div class="card">
-      <h2>تقسيم ملف PDF</h2>
-      <p class="muted">اختر ملفًا وأدخل الصفحات مثل: <b>1-3,5,8-9</b></p>
-      <div class="field">
-        <input type="file" id="split-input" accept="application/pdf">
-      </div>
-      <div class="field">
-        <label for="ranges">نطاق الصفحات</label>
-        <input id="ranges" placeholder="مثال: 1-2,4,7-9" />
-      </div>
-      <div class="row">
-        <button class="btn brand" id="split-btn">تقسيم وتحميل</button>
-        <button class="btn" id="split-clear">تفريغ</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>صور → PDF</h2>
-      <p class="muted">حوّل صور JPG/PNG إلى ملف PDF واحد (صفحة لكل صورة).</p>
-      <div class="field">
-        <input type="file" id="img2pdf-input" accept="image/*" multiple>
-      </div>
-      <div class="row">
-        <label>حجم الصفحة:
-          <select id="paper">
-            <option value="a4">A4</option>
-            <option value="letter">Letter</option>
-          </select>
-        </label>
-        <label>ملاءمة:
-          <select id="fit">
-            <option value="contain">احتواء</option>
-            <option value="cover">ملء الصفحة</option>
-          </select>
-        </label>
-        <button class="btn good" id="img2pdf-btn">تحويل وتحميل</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>نصائح</h2>
-      <ul>
-        <li>كل الأدوات تعمل داخل المتصفح (بدون رفع ملفات إلى خادم).</li>
-        <li>لضغط PDF كبير، جرّب إعادة تصديره عبر "صور → PDF" مع صور أخف.</li>
-        <li>يمكنك تغيير ترتيب ملفات الدمج بسحبها في القائمة.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- CV BUILDER PANEL -->
-<section id="panel-cv" class="panel">
-  <div class="grid">
-    <div class="card">
-      <h2>بيانات السيرة الذاتية</h2>
-      <div class="field">
-        <label>الاسم الكامل</label>
-        <input id="cv-name" placeholder="الاسم" />
-      </div>
-      <div class="field">
-        <label>المسمى الوظيفي</label>
-        <input id="cv-title" placeholder="مثال: مطوّر واجهات" />
-      </div>
-      <div class="field">
-        <label>الملخص المهني</label>
-        <textarea id="cv-summary" placeholder="نبذة قصيرة…"></textarea>
-      </div>
-      <div class="field">
-        <label>الخبرات (كل خبرة في سطر)</label>
-        <textarea id="cv-exp" placeholder="الشركة — المنصب — السنوات"></textarea>
-      </div>
-      <div class="field">
-        <label>التعليم</label>
-        <textarea id="cv-edu" placeholder="الجامعة — الدرجة — السنوات"></textarea>
-      </div>
-      <div class="field">
-        <label>المهارات (مفصولة بفواصل)</label>
-        <input id="cv-skills" placeholder="JavaScript, React, Welding…" />
-      </div>
-      <div class="field">
-        <label>الصورة (اختياري)</label>
-        <input type="file" id="cv-photo" accept="image/*" />
-      </div>
-      <div class="row">
-        <button class="btn brand" id="cv-generate">تحديث المعاينة</button>
-        <button class="btn good" id="cv-download">تحميل PDF</button>
-        <button class="btn" id="cv-clear">تفريغ</button>
-      </div>
-    </div>
-
-    <div class="card cv">
-      <h2 style="margin-bottom:10px">معاينة السيرة الذاتية</h2>
-      <div id="cv-sheet" class="sheet" aria-label="معاينة قابلة للطباعة">
-        <div class="cv-header">
-          <div class="avatar" id="cv-avatar"></div>
-          <div>
-            <div id="cv-name-v" style="font-size:26px;font-weight:800">الاسم الكامل</div>
-            <div id="cv-title-v" style="opacity:.9">المسمى الوظيفي</div>
+    <!-- PDF TOOLS PANEL -->
+    <section id="panel-pdf" class="panel active">
+      <div class="grid">
+        <div class="card">
+          <h2>دمج ملفات PDF</h2>
+          <p class="muted">ارفع عدة ملفات PDF بترتيبك ثم اضغط دمج. (يدعم ترتيب للهاتف بالأزرار)</p>
+          <div class="drop" id="merge-drop">
+            <input type="file" id="merge-input" accept="application/pdf" multiple>
+            <label for="merge-input">اختر ملفات PDF</label>
+            <ul id="merge-list" class="list" aria-live="polite"></ul>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn brand" id="merge-btn">دمـج وتحميل</button>
+            <button class="btn" id="merge-clear">تفريغ</button>
           </div>
         </div>
-        <div class="cv-body">
-          <aside class="cv-side">
-            <h3 style="margin-top:0">المهارات</h3>
-            <div id="cv-skills-v"></div>
-          </aside>
-          <main class="cv-main">
-            <section>
-              <h3 style="margin-top:0">الملخص</h3>
-              <p id="cv-summary-v">اكتب ملخصك المهني بإيجاز ووضوح.</p>
-            </section>
-            <section>
-              <h3>الخبرات</h3>
-              <div id="cv-exp-v"></div>
-            </section>
-            <section>
-              <h3>التعليم</h3>
-              <div id="cv-edu-v"></div>
-            </section>
-          </main>
+
+        <div class="card">
+          <h2>تقسيم ملف PDF</h2>
+          <p class="muted">أدخل الصفحات مثل: 1-3, 5, 8-9 (تجاهل المدخلات غير الصالحة تلقائيًا)</p>
+          <div class="field">
+            <input type="file" id="split-input" accept="application/pdf">
+          </div>
+          <div class="field">
+            <label for="ranges">نطاق الصفحات</label>
+            <input id="ranges" placeholder="مثال: 1-2,4,7-9" />
+          </div>
+          <div class="row">
+            <button class="btn brand" id="split-btn">تقسيم وتحميل</button>
+            <button class="btn" id="split-clear">تفريغ</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>صور → PDF</h2>
+          <p class="muted">حوّل صور JPG/PNG إلى PDF (صفحة لكل صورة) داخل جهازك.</p>
+          <div class="field">
+            <input type="file" id="img2pdf-input" accept="image/*" multiple>
+          </div>
+          <div class="row">
+            <label>حجم الصفحة:
+              <select id="paper"><option value="a4">A4</option><option value="letter">Letter</option></select>
+            </label>
+            <label>ملاءمة:
+              <select id="fit"><option value="contain">احتواء</option><option value="cover">ملء الصفحة</option></select>
+            </label>
+            <button class="btn good" id="img2pdf-btn">تحويل وتحميل</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>نصائح</h2>
+          <ul>
+            <li>كل الأدوات تعمل داخل المتصفح (بدون رفع ملفات).</li>
+            <li>يمكنك تغيير ترتيب ملفات الدمج بالسحب أو أزرار ↑ ↓.</li>
+            <li>إذا فشل ملف محمي بكلمة مرور — أزل الحماية أولاً.</li>
+          </ul>
         </div>
       </div>
-      <div class="footer">* سيتم حفظ كل شيء محليًا في المتصفح (LocalStorage).</div>
-    </div>
+    </section>
+
+    <!-- CV BUILDER PANEL -->
+    <section id="panel-cv" class="panel">
+      <div class="grid">
+        <div class="card">
+          <h2>بيانات السيرة الذاتية</h2>
+          <div class="field"><label>الاسم الكامل</label><input id="cv-name" placeholder="الاسم" /></div>
+          <div class="field"><label>المسمى الوظيفي</label><input id="cv-title" placeholder="مثال: مطوّر واجهات" /></div>
+          <div class="field"><label>الملخص المهني</label><textarea id="cv-summary" placeholder="نبذة قصيرة…"></textarea></div>
+          <div class="field"><label>الخبرات (كل خبرة في سطر)</label><textarea id="cv-exp" placeholder="الشركة — المنصب — السنوات"></textarea></div>
+          <div class="field"><label>التعليم</label><textarea id="cv-edu" placeholder="الجامعة — الدرجة — السنوات"></textarea></div>
+          <div class="field"><label>المهارات (مفصولة بفواصل)</label><input id="cv-skills" placeholder="JavaScript, React, Welding…" /></div>
+          <div class="field"><label>الصورة (اختياري)</label><input type="file" id="cv-photo" accept="image/*" /></div>
+          <div class="row">
+            <button class="btn brand" id="cv-generate">تحديث المعاينة</button>
+            <button class="btn good" id="cv-download">تحميل PDF</button>
+            <button class="btn" id="cv-clear">تفريغ</button>
+          </div>
+        </div>
+
+        <div class="card cv">
+          <h2 style="margin-bottom:10px">معاينة السيرة الذاتية</h2>
+          <div id="cv-sheet" class="sheet" aria-label="معاينة قابلة للطباعة">
+            <div class="cv-header">
+              <div class="avatar" id="cv-avatar"></div>
+              <div>
+                <div id="cv-name-v" style="font-size:26px;font-weight:800">الاسم الكامل</div>
+                <div id="cv-title-v" style="opacity:.9">المسمى الوظيفي</div>
+              </div>
+            </div>
+            <div class="cv-body">
+              <aside class="cv-side">
+                <h3 style="margin-top:0">المهارات</h3>
+                <div id="cv-skills-v"></div>
+              </aside>
+              <main class="cv-main">
+                <section>
+                  <h3 style="margin-top:0">الملخص</h3>
+                  <p id="cv-summary-v">اكتب ملخصك المهني بإيجاز ووضوح.</p>
+                </section>
+                <section>
+                  <h3>الخبرات</h3>
+                  <div id="cv-exp-v"></div>
+                </section>
+                <section>
+                  <h3>التعليم</h3>
+                    <div id="cv-edu-v"></div>
+                </section>
+              </main>
+            </div>
+          </div>
+          <div class="footer">* يتم الحفظ محليًا في المتصفح (LocalStorage).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT PANEL -->
+    <section id="panel-about" class="panel">
+      <div class="grid" style="grid-template-columns:1fr">
+        <div class="card">
+          <h2>عن الموقع والتسعير</h2>
+          <p class="muted">القالب يعمل 100% على الواجهة ويمكن نشره على GitHub Pages أو Netlify بسهولة. لاحقًا يمكنك إضافة Stripe.</p>
+          <ul>
+            <li><b>مجاني:</b> دمج حتى 10 ملفات، تقسيم حتى 30 صفحة، قالب CV واحد.</li>
+            <li><b>مدفوع:</b> غير محدود + قوالب CV إضافية + حفظ سحابي.</li>
+          </ul>
+          <p>الخصوصية: لا يتم رفع الملفات لأي خادم في هذه النسخة؛ كل المعالجة تتم داخل جهاز المستخدم.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">© <span id="year"></span> — موقع خدمات PDF & CV — نسخة مُعالَجة</div>
   </div>
-</section>
 
-<!-- ABOUT PANEL -->
-<section id="panel-about" class="panel">
-  <div class="grid" style="grid-template-columns:1fr">
-    <div class="card">
-      <h2>عن الموقع والتسعير</h2>
-      <p class="muted">هذا القالب يعمل 100% على الواجهة (Front‑End) ويمكن نشره على GitHub Pages أو Netlify بسهولة.
-        يمكنك لاحقًا إضافة بوابة دفع (Stripe) لقفل بعض الميزات المتقدمة.</p>
-      <ul>
-        <li><b>الخطة المجانية:</b> دمج حتى 10 ملفات، تقسيم حتى 30 صفحة، قالب CV واحد.</li>
-        <li><b>الخطة المدفوعة:</b> غير محدود + قوالب CV إضافية + حفظ سحابي.</li>
-      </ul>
-      <p>الخصوصية: لا يتم رفع الملفات لأي خادم في هذه النسخة؛ كل المعالجة تتم داخل جهاز المستخدم.</p>
-    </div>
-  </div>
-</section>
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 
-<div class="footer">© <span id="year"></span> — موقع خدمات PDF & CV — نسخة مبدئية جاهزة للتطوير</div>
-
-  </div>  <!-- Libraries -->  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>  <script>
+  <script>
     // ===== Tabs =====
     const tabs = document.querySelectorAll('.tab-btn');
-    const panels = {
-      pdf: document.getElementById('panel-pdf'),
-      cv: document.getElementById('panel-cv'),
-      about: document.getElementById('panel-about')
-    };
-    tabs.forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        tabs.forEach(b=>b.setAttribute('aria-selected','false'));
-        btn.setAttribute('aria-selected','true');
-        Object.values(panels).forEach(p=>p.classList.remove('active'));
-        panels[btn.dataset.tab].classList.add('active');
-      })
-    });
-
-    // ===== YEAR =====
+    const panels = { pdf: document.getElementById('panel-pdf'), cv: document.getElementById('panel-cv'), about: document.getElementById('panel-about') };
+    tabs.forEach(btn=>{ btn.addEventListener('click',()=>{ tabs.forEach(b=>b.setAttribute('aria-selected','false')); btn.setAttribute('aria-selected','true'); Object.values(panels).forEach(p=>p.classList.remove('active')); panels[btn.dataset.tab].classList.add('active'); }); });
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // ===== Helpers =====
     const $ = sel => document.querySelector(sel);
-    function downloadBlob(bytes, filename, type='application/pdf'){
-      const blob = new Blob([bytes], {type});
+    function downloadBlob(bytes, filename, type){
+      const blob = new Blob([bytes], {type: type || 'application/pdf'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename; a.click();
-      URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
     }
 
     // ===== MERGE PDF =====
@@ -286,211 +233,229 @@
       mergeFiles.forEach((f,idx)=>{
         const li = document.createElement('li');
         li.draggable = true;
-        li.innerHTML = `<span>${idx+1}. ${f.name} <small class="muted">(${(f.size/1024/1024).toFixed(2)} MB)</small></span><button class="btn danger" data-i="${idx}">حذف</button>`;
+        li.innerHTML = '<span>'+ (idx+1) +'. '+ f.name +' <small class="muted">('+ (f.size/1024/1024).toFixed(2) +' MB)</small></span>'+
+                        '<span class="actions">\
+            <button class="btn" data-action="up" data-i="'+idx+'" title="أعلى">↑</button>\
+            <button class="btn" data-action="down" data-i="'+idx+'" title="أسفل">↓</button>\
+            <button class="btn danger" data-action="del" data-i="'+idx+'">حذف</button></span>';
         mergeList.appendChild(li);
       });
     }
     mergeList.addEventListener('click', (e)=>{
-      const i = e.target.dataset.i;
-      if(i!==undefined){ mergeFiles.splice(+i,1); refreshMergeList(); }
+      const i = e.target.dataset.i; const action = e.target.dataset.action; if(i===undefined) return;
+      const idx = parseInt(i,10);
+      if(action==='del'){ mergeFiles.splice(idx,1); }
+      if(action==='up' && idx>0){ const m=mergeFiles.splice(idx,1)[0]; mergeFiles.splice(idx-1,0,m); }
+      if(action==='down' && idx<mergeFiles.length-1){ const m=mergeFiles.splice(idx,1)[0]; mergeFiles.splice(idx+1,0,m); }
+      refreshMergeList();
     });
     // Drag reorder
     let dragIdx=null;
-    mergeList.addEventListener('dragstart', e=>{
-      dragIdx = [...mergeList.children].indexOf(e.target);
-    });
+    mergeList.addEventListener('dragstart', e=>{ const li=e.target.closest('li'); dragIdx = Array.prototype.indexOf.call(mergeList.children, li); });
     mergeList.addEventListener('dragover', e=>{ e.preventDefault(); });
     mergeList.addEventListener('drop', e=>{
-      e.preventDefault();
-      const dropIdx = [...mergeList.children].indexOf(e.target.closest('li'));
-      if(dragIdx>=0 && dropIdx>=0 && dragIdx!==dropIdx){
-        const [m] = mergeFiles.splice(dragIdx,1);
-        mergeFiles.splice(dropIdx,0,m);
-        refreshMergeList();
-      }
+      e.preventDefault(); const li=e.target.closest('li'); const dropIdx = Array.prototype.indexOf.call(mergeList.children, li);
+      if(dragIdx>=0 && dropIdx>=0 && dragIdx!==dropIdx){ const m=mergeFiles.splice(dragIdx,1)[0]; mergeFiles.splice(dropIdx,0,m); refreshMergeList(); }
+      dragIdx=null;
     });
 
-    mergeInput.addEventListener('change', (e)=>{
-      [...e.target.files].forEach(f=>mergeFiles.push(f));
-      refreshMergeList();
-    });
+    mergeInput.addEventListener('change', (e)=>{ Array.prototype.forEach.call(e.target.files, f=>mergeFiles.push(f)); refreshMergeList(); });
     document.getElementById('merge-clear').onclick = ()=>{ mergeFiles.length=0; refreshMergeList(); };
 
     document.getElementById('merge-btn').onclick = async ()=>{
-      if(!mergeFiles.length) return alert('أضف ملفات أولاً');
-      const { PDFDocument } = PDFLib;
-      const merged = await PDFDocument.create();
-      for(const f of mergeFiles){
-        const bytes = await f.arrayBuffer();
-        const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
-        const pages = await merged.copyPages(src, src.getPageIndices());
-        pages.forEach(p=>merged.addPage(p));
-      }
-      const out = await merged.save({
-        addDefaultPage:false,
-      });
-      downloadBlob(out, `merged_${Date.now()}.pdf`);
+      if(!mergeFiles.length) { alert('أضف ملفات أولاً'); return; }
+      try{
+        const PDFDocument = PDFLib.PDFDocument;
+        const merged = await PDFDocument.create();
+        for(const f of mergeFiles){
+          const bytes = await f.arrayBuffer();
+          const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
+          const pages = await merged.copyPages(src, src.getPageIndices());
+          pages.forEach(p=>merged.addPage(p));
+        }
+        const out = await merged.save({ addDefaultPage:false });
+        downloadBlob(out, 'merged_'+Date.now()+'.pdf');
+      }catch(err){ console.error(err); alert('تعذر الدمج. ربما الملف محمي بكلمة مرور أو تالف.'); }
     };
 
     // ===== SPLIT PDF =====
-    document.getElementById('split-clear').onclick = ()=>{ $('#split-input').value=''; $('#ranges').value=''; };
+    document.getElementById('split-clear').onclick = ()=>{ document.getElementById('split-input').value=''; document.getElementById('ranges').value=''; };
 
     function parseRanges(str, total){
-      const set = new Set();
-      str.split(',').map(s=>s.trim()).filter(Boolean).forEach(part=>{
-        if(part.includes('-')){
-          const [a,b] = part.split('-').map(n=>parseInt(n,10));
-          const from = Math.min(a,b), to = Math.max(a,b);
-          for(let i=from;i<=to;i++) if(i>=1 && i<=total) set.add(i-1);
-        }else{
-          const n = parseInt(part,10); if(n>=1 && n<=total) set.add(n-1);
+      const set = [];
+      const seen = {};
+      str.split(',').map(function(s){return s.trim();}).filter(function(x){return x;}).forEach(function(part){
+        const dash = part.indexOf('-');
+        let a, b;
+        if(dash>-1){ a = parseInt(part.slice(0,dash),10); b = parseInt(part.slice(dash+1),10); }
+        else { a = parseInt(part,10); b = a; }
+        if(isNaN(a) || isNaN(b)) return;
+        const from = Math.min(a,b), to = Math.max(a,b);
+        for(let i=from;i<=to;i++){
+          if(i>=1 && i<=total && !seen[i]){ seen[i]=true; set.push(i-1); }
         }
       });
-      return [...set].sort((x,y)=>x-y);
+      set.sort(function(x,y){return x-y});
+      return set;
     }
 
     document.getElementById('split-btn').onclick = async ()=>{
-      const file = document.getElementById('split-input').files?.[0];
+      const file = document.getElementById('split-input').files && document.getElementById('split-input').files[0];
       const ranges = document.getElementById('ranges').value.trim();
-      if(!file) return alert('اختر ملف PDF');
-      const bytes = await file.arrayBuffer();
-      const { PDFDocument } = PDFLib;
-      const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
-      const total = src.getPageCount();
-      const indices = ranges ? parseRanges(ranges, total) : src.getPageIndices();
-      if(!indices.length) return alert('لا توجد صفحات مطابقة للنطاق');
-      const outDoc = await PDFDocument.create();
-      const pages = await outDoc.copyPages(src, indices);
-      pages.forEach(p=>outDoc.addPage(p));
-      const out = await outDoc.save();
-      downloadBlob(out, `split_${Date.now()}.pdf`);
+      if(!file) { alert('اختر ملف PDF'); return; }
+      try{
+        const bytes = await file.arrayBuffer();
+        const PDFDocument = PDFLib.PDFDocument;
+        const src = await PDFDocument.load(bytes, { ignoreEncryption:true });
+        const total = src.getPageCount();
+        const indices = ranges ? parseRanges(ranges, total) : src.getPageIndices();
+        if(!indices.length) { alert('لا توجد صفحات مطابقة للنطاق'); return; }
+        const outDoc = await PDFDocument.create();
+        const pages = await outDoc.copyPages(src, indices);
+        pages.forEach(p=>outDoc.addPage(p));
+        const out = await outDoc.save();
+        downloadBlob(out, 'split_'+Date.now()+'.pdf');
+      }catch(err){ console.error(err); alert('تعذر التقسيم. تحقق من أن الملف غير محمي وأن النطاق صحيح.'); }
     };
 
     // ===== IMAGES → PDF =====
-    const sizeMap = {
-      a4: { w: 595.28, h: 841.89 }, // pt
-      letter: { w: 612, h: 792 }
-    };
-
+    const sizeMap = { a4:{ w:595.28, h:841.89 }, letter:{ w:612, h:792 } };
     document.getElementById('img2pdf-btn').onclick = async ()=>{
-      const files = document.getElementById('img2pdf-input').files;
-      if(!files || !files.length) return alert('اختر صورًا أولاً');
+      const input = document.getElementById('img2pdf-input');
+      const files = input.files;
+      if(!files || !files.length){ alert('اختر صورًا أولاً'); return; }
       const paper = document.getElementById('paper').value;
       const fit = document.getElementById('fit').value; // contain | cover
-      const { jsPDF } = window.jspdf;
-
-      // إذا لم تتوفر jsPDF من html2pdf، ننشئ مثيل يدويًا
-      const pdf = new jsPDF({ unit:'pt', format:[sizeMap[paper].w, sizeMap[paper].h], orientation:'portrait' });
-
-      for(let i=0;i<files.length;i++){
-        const img = await fileToImage(files[i]);
-        if(i>0) pdf.addPage([sizeMap[paper].w, sizeMap[paper].h], 'portrait');
-        const rect = fitRect(img.width, img.height, sizeMap[paper].w, sizeMap[paper].h, fit);
-        pdf.addImage(imgToDataURL(img), undefined, rect.x, rect.y, rect.w, rect.h);
-      }
-      pdf.save(`images_${Date.now()}.pdf`);
+      const jsPDF = window.jspdf.jsPDF;
+      try{
+        const pdf = new jsPDF({ unit:'pt', format:[sizeMap[paper].w, sizeMap[paper].h], orientation:'portrait' });
+        for(let i=0;i<files.length;i++){
+          const img = await fileToImage(files[i]);
+          if(i>0) pdf.addPage([sizeMap[paper].w, sizeMap[paper].h]);
+          const rect = fitRect(img.width, img.height, sizeMap[paper].w, sizeMap[paper].h, fit);
+          pdf.addImage(imageToDataURL(img), undefined, rect.x, rect.y, rect.w, rect.h);
+        }
+        pdf.save('images_'+Date.now()+'.pdf');
+      }catch(err){ console.error(err); alert('تعذر التحويل. تأكد من أن الصور صالحة أو جرّب صورًا أصغر.'); }
     };
 
     function fileToImage(file){
-      return new Promise((resolve,reject)=>{
+      return new Promise(function(resolve,reject){
         const reader = new FileReader();
-        reader.onload = ()=>{
-          const img = new Image();
-          img.onload=()=>resolve(img);
-          img.onerror=reject;
-          img.src = reader.result;
-        };
-        reader.onerror=reject;
+        reader.onload = function(){ const img = new Image(); img.onload=function(){ resolve(img); }; img.onerror=reject; img.src = reader.result; };
+        reader.onerror = reject;
         reader.readAsDataURL(file);
       });
     }
-    function imgToDataURL(img){
-      const c = document.createElement('canvas');
-      c.width = img.width; c.height = img.height;
-      const ctx = c.getContext('2d');
-      ctx.drawImage(img,0,0);
+    function imageToDataURL(img){
+      const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+      const ctx = c.getContext('2d'); ctx.drawImage(img,0,0);
       return c.toDataURL('image/jpeg', 0.92);
     }
-    function fitRect(iw, ih, cw, ch, mode='contain'){
-      const ir = iw/ih, cr = cw/ch;
-      let w,h;
-      if((mode==='contain' && ir>cr) || (mode==='cover' && ir<cr)){
-        w = cw; h = w/ir;
-      }else{ h = ch; w = h*ir; }
-      const x = (cw - w)/2, y = (ch - h)/2;
-      return {x,y,w,h};
+    function fitRect(iw, ih, cw, ch, mode){
+      const ir = iw/ih, cr = cw/ch; let w,h;
+      const cover = mode === 'cover';
+      if((!cover && ir>cr) || (cover && ir<cr)){ w=cw; h=w/ir; } else { h=ch; w=h*ir; }
+      const x = (cw - w)/2, y = (ch - h)/2; return {x:x, y:y, w:w, h:h};
     }
 
     // ===== CV BUILDER =====
-    const store = (k,v)=>localStorage.setItem(k, JSON.stringify(v));
-    const load = (k, def)=>{ try{ return JSON.parse(localStorage.getItem(k)) ?? def }catch{ return def }}
+    function slugifyName(s){
+      const parts = (s || '').trim().split(' ').filter(function(p){return p && p.length;});
+      return parts.join('_') || 'CV';
+    }
+    function splitLines(s){
+      // تفادي استخدام \n حرفياً داخل الاستبدال — نعتمد على كود 10
+      const NL = String.fromCharCode(10);
+      return (s||'').split(NL).filter(function(x){return x && x.trim().length;});
+    }
+    const store = function(k,v){ localStorage.setItem(k, JSON.stringify(v)); };
+    const load = function(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } };
 
     function syncPreview(){
-      const name = $('#cv-name').value.trim() || 'الاسم الكامل';
-      const title = $('#cv-title').value.trim() || 'المسمى الوظيفي';
-      const summary = $('#cv-summary').value.trim() || 'اكتب ملخصك المهني بإيجاز ووضوح.';
-      const exp = $('#cv-exp').value.trim().split('\n').filter(Boolean);
-      const edu = $('#cv-edu').value.trim().split('\n').filter(Boolean);
-      const skills = $('#cv-skills').value.split(',').map(s=>s.trim()).filter(Boolean);
+      const name = (document.getElementById('cv-name').value || '').trim() || 'الاسم الكامل';
+      const title = (document.getElementById('cv-title').value || '').trim() || 'المسمى الوظيفي';
+      const summary = (document.getElementById('cv-summary').value || '').trim() || 'اكتب ملخصك المهني بإيجاز ووضوح.';
+      const exp = splitLines(document.getElementById('cv-exp').value);
+      const edu = splitLines(document.getElementById('cv-edu').value);
+      const skills = (document.getElementById('cv-skills').value || '').split(',').map(function(s){return s.trim();}).filter(function(x){return x;});
 
-      $('#cv-name-v').textContent = name;
-      $('#cv-title-v').textContent = title;
-      $('#cv-summary-v').textContent = summary;
+      document.getElementById('cv-name-v').textContent = name;
+      document.getElementById('cv-title-v').textContent = title;
+      document.getElementById('cv-summary-v').textContent = summary;
 
-      const expV = $('#cv-exp-v'); expV.innerHTML='';
-      exp.forEach(line=>{
-        const p = document.createElement('p'); p.textContent = line; expV.appendChild(p);
-      });
-      const eduV = $('#cv-edu-v'); eduV.innerHTML='';
-      edu.forEach(line=>{ const p = document.createElement('p'); p.textContent=line; eduV.appendChild(p); });
+      const expV = document.getElementById('cv-exp-v'); expV.innerHTML='';
+      exp.forEach(function(line){ const p=document.createElement('p'); p.textContent=line; expV.appendChild(p); });
+      const eduV = document.getElementById('cv-edu-v'); eduV.innerHTML='';
+      edu.forEach(function(line){ const p=document.createElement('p'); p.textContent=line; eduV.appendChild(p); });
+      const skillsV = document.getElementById('cv-skills-v'); skillsV.innerHTML='';
+      skills.forEach(function(s){ const span=document.createElement('span'); span.className='tag'; span.textContent=s; skillsV.appendChild(span); });
 
-      const skillsV = $('#cv-skills-v'); skillsV.innerHTML='';
-      skills.forEach(s=>{ const span=document.createElement('span'); span.className='tag'; span.textContent=s; skillsV.appendChild(span); })
-
-      store('cv-data',{name,title,summary,exp,edu,skills,photo:load('cv-photo',null)});
+      store('cv-data',{name:name,title:title,summary:summary,exp:exp,edu:edu,skills:skills,photo:load('cv-photo',null)});
     }
 
     document.getElementById('cv-generate').onclick = syncPreview;
-    document.getElementById('cv-clear').onclick = ()=>{
-      ['cv-name','cv-title','cv-summary','cv-exp','cv-edu','cv-skills'].forEach(id=>$('#'+id).value='');
+    document.getElementById('cv-clear').onclick = function(){
+      ['cv-name','cv-title','cv-summary','cv-exp','cv-edu','cv-skills'].forEach(function(id){ document.getElementById(id).value=''; });
       localStorage.removeItem('cv-data'); localStorage.removeItem('cv-photo');
-      $('#cv-avatar').innerHTML='';
+      document.getElementById('cv-avatar').innerHTML='';
       syncPreview();
     };
 
-    document.getElementById('cv-download').onclick = ()=>{
+    // تنزيل CV كـ PDF (حل مشكلة صفحات فارغة: نسخة معزولة + انتظار الخطوط)
+    document.getElementById('cv-download').onclick = async function(){
       const sheet = document.getElementById('cv-sheet');
-      const name = ($('#cv-name').value.trim() || 'CV');
-      const opt = { filename: `${name.replace(/\s+/g,'_')}.pdf`, margin: 0, image:{ type:'jpeg', quality: 0.98 }, html2canvas:{ scale: 3, useCORS:true }, jsPDF:{ unit:'pt', format:'a4', orientation:'portrait' } };
-      html2pdf().set(opt).from(sheet).save();
+      const nameInput = document.getElementById('cv-name');
+      const name = slugifyName((nameInput && nameInput.value) || 'CV');
+      try{
+        if(document.fonts && document.fonts.ready) await document.fonts.ready;
+        const clone = sheet.cloneNode(true);
+        clone.style.position='fixed';
+        clone.style.left='-10000px';
+        clone.style.top='0';
+        clone.style.transform='none';
+        clone.style.background='#ffffff';
+        clone.style.width = sheet.offsetWidth+'px';
+        document.body.appendChild(clone);
+        const opt = {
+          filename: name + '.pdf',
+          margin: 0,
+          image:{ type:'jpeg', quality: 0.98 },
+          html2canvas:{ scale: 2, useCORS:true, backgroundColor:'#ffffff', windowWidth: clone.scrollWidth || clone.offsetWidth, windowHeight: clone.scrollHeight || clone.offsetHeight, removeContainer:true },
+          jsPDF:{ unit:'pt', format:'a4', orientation:'portrait' }
+        };
+        await html2pdf().set(opt).from(clone).save();
+        clone.remove();
+      }catch(err){ console.error(err); alert('حدثت مشكلة أثناء توليد PDF. حاول ثانية أو قلل حجم الصور.'); }
     };
 
     // Photo upload
-    document.getElementById('cv-photo').addEventListener('change', async (e)=>{
-      const file = e.target.files?.[0]; if(!file) return;
+    document.getElementById('cv-photo').addEventListener('change', function(e){
+      const file = e.target.files && e.target.files[0]; if(!file) return;
       const reader = new FileReader();
-      reader.onload = ()=>{ localStorage.setItem('cv-photo', reader.result); renderAvatar(); };
+      reader.onload = function(){ localStorage.setItem('cv-photo', reader.result); renderAvatar(); };
       reader.readAsDataURL(file);
     });
     function renderAvatar(){
       const data = localStorage.getItem('cv-photo');
       const box = document.getElementById('cv-avatar');
-      box.innerHTML = data ? `<img src="${data}" alt=""/>` : '';
+      box.innerHTML = data ? '<img src="'+data+'" alt=""/>' : '';
     }
 
-    // Load persisted
+    // Load persisted on start
     (function(){
       const data = load('cv-data',null);
       if(data){
-        $('#cv-name').value=data.name||'';
-        $('#cv-title').value=data.title||'';
-        $('#cv-summary').value=data.summary||'';
-        $('#cv-exp').value=(data.exp||[]).join('\n');
-        $('#cv-edu').value=(data.edu||[]).join('\n');
-        $('#cv-skills').value=(data.skills||[]).join(', ');
+        document.getElementById('cv-name').value = data.name || '';
+        document.getElementById('cv-title').value = data.title || '';
+        document.getElementById('cv-summary').value = data.summary || '';
+        document.getElementById('cv-exp').value = (data.exp || []).join(String.fromCharCode(10));
+        document.getElementById('cv-edu').value = (data.edu || []).join(String.fromCharCode(10));
+        document.getElementById('cv-skills').value = (data.skills || []).join(', ');
       }
       renderAvatar();
       syncPreview();
     })();
-  </script>  <!-- jsPDF (exposed by html2pdf bundle) shim for direct access above -->  <script>window.jspdf = window.jspdf || window.jsPDF ? { jsPDF: window.jsPDF } : undefined;</script></body>
+  </script>
+</body>
 </html>
