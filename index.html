@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>خدمات PDF & CV — ملف واحد (مصحّح نهائي)</title>
-  <meta name="description" content="أدوات PDF (دمج، تقسيم، صور→PDF) ومنشئ سيرة ذاتية مع تصدير PDF — يعمل بالكامل داخل المتصفح.">
+  <title>خدمات PDF & CV — ملف واحد (مصحّح للجوال)</title>
+  <meta name="description" content="أدوات PDF (دمج، تقسيم، صور→PDF) ومنشئ سيرة ذاتية مع تصدير PDF — يعمل محليًا داخل المتصفح.">
 
   <style>
     :root { --bg:#0b1220; --card:#121a2b; --muted:#93a4c7; --text:#e9eefb; --brand:#3aa9ff; --brand-2:#7ee787; --danger:#ff6b6b; --accent:#ffd166; --radius:18px; }
@@ -435,7 +435,7 @@
       syncPreview();
     };
 
-    // ===== تنزيل CV كـ PDF (بدون صفحات بيضاء) =====
+    // ===== تنزيل CV كـ PDF — مُحسَّن للجوال مع مسار احتياطي =====
     document.getElementById('cv-download').onclick = async function(){
       const sheet = document.getElementById('cv-sheet');
       const nameInput = document.getElementById('cv-name');
@@ -443,7 +443,7 @@
 
       if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch(_) {} }
 
-      // نسخة داخل الـ viewport لكن بدون شفافية
+      // نسخة داخل الـ viewport (بدون شفافية)
       const clone = sheet.cloneNode(true);
       clone.setAttribute('dir','rtl');
       Object.assign(clone.style, {
@@ -452,7 +452,7 @@
         top: '0',
         transform: 'none',
         filter: 'none',
-        visibility: 'hidden',     // بدل opacity:0
+        visibility: 'hidden',     // لا نستخدم opacity:0
         pointerEvents: 'none',
         background: '#ffffff',
         width: sheet.offsetWidth + 'px',
@@ -465,57 +465,44 @@
       const cleanup = ()=>{ try{ clone.remove(); }catch(_){} };
 
       try{
-        // نستخدم html2canvas المضمّن في bundle عبر html2pdf
-        if (window.html2pdf && window.jspdf && window.jspdf.jsPDF) {
-          const canvas = await window.html2canvas(clone, {
-            scale: Math.min(2, (window.devicePixelRatio || 2)),
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            windowWidth: clone.scrollWidth || clone.offsetWidth,
-            windowHeight: clone.scrollHeight || clone.offsetHeight
-          });
+        // scale أقل على الموبايل لتقليل استهلاك الذاكرة
+        const scale = /Mobi|Android/i.test(navigator.userAgent) ? 1.2 : 2;
 
-          const imgData = canvas.toDataURL('image/jpeg', 0.98);
-          const pdf = new window.jspdf.jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
+        const canvas = await window.html2canvas(clone, {
+          scale,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          windowWidth: clone.scrollWidth || clone.offsetWidth,
+          windowHeight: clone.scrollHeight || clone.offsetHeight
+        });
 
-          const pageW = pdf.internal.pageSize.getWidth();
-          const pageH = pdf.internal.pageSize.getHeight();
-          const imgW = canvas.width, imgH = canvas.height;
-          const ratio = Math.min(pageW / imgW, pageH / imgH);
-          const renderW = imgW * ratio, renderH = imgH * ratio;
-          const offsetX = (pageW - renderW) / 2, offsetY = (pageH - renderH) / 2;
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const pdf = new window.jspdf.jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
 
-          pdf.addImage(imgData, 'JPEG', offsetX, offsetY, renderW, renderH);
-          pdf.save(fileName);
-          cleanup();
-          return;
-        }
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+        const renderW = canvas.width * ratio, renderH = canvas.height * ratio;
+        const offsetX = (pageW - renderW) / 2, offsetY = (pageH - renderH) / 2;
 
-        // احتياطي: html2pdf مباشرة
+        pdf.addImage(imgData, 'JPEG', offsetX, offsetY, renderW, renderH);
+        pdf.save(fileName);
+      } catch(err){
+        console.error("خطأ html2canvas:", err);
+        // احتياطي: html2pdf مباشرة (أبطأ لكنه أخف)
         if (window.html2pdf) {
           await window.html2pdf().set({
             filename: fileName,
             margin: 0,
-            image: { type:'jpeg', quality: 0.98 },
-            html2canvas: {
-              scale: Math.min(2, (window.devicePixelRatio || 2)),
-              useCORS: true,
-              backgroundColor: '#ffffff',
-              windowWidth: clone.scrollWidth || clone.offsetWidth,
-              windowHeight: clone.scrollHeight || clone.offsetHeight
-            },
+            image: { type:'jpeg', quality: 0.95 },
+            html2canvas: { scale: 1, useCORS:true, backgroundColor:'#ffffff' },
             jsPDF: { unit:'pt', format:'a4', orientation:'portrait' }
           }).from(clone).save();
-          cleanup();
-          return;
+        } else {
+          alert("تعذر توليد PDF حتى بالوضع الاحتياطي.");
         }
-
-        alert('لا تتوفر أدوات التصدير. تأكد من تحميل المكتبات.');
-      }catch(err){
-        console.error(err);
-        alert('حدثت مشكلة أثناء توليد PDF. جرّب مرة ثانية أو قلل حجم الصور.');
-      }finally{
+      } finally {
         cleanup();
       }
     };
