@@ -9,485 +9,443 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#0b1220; --bg2:#0d152b;
-      --card:#111a2f; --card2:#0e1629;
-      --ink:#0d1426; --text:#e9eefb; --muted:#9fb0d6;
-      --brand:#3aa9ff; --ring:0 0 0 2px rgb(58 169 255 / .25) inset;
-      --paper:#ffffff; --border:#e9edf5;
+    :root {
+      --bg: #0b1220; --bg2: #0d152b;
+      --card: #111a2f; --card2: #0e1629;
+      --ink: #0d1426; --text: #e9eefb; --muted: #9fb0d6;
+      --brand: #3aa9ff; --ring: 0 0 0 2px rgb(58 169 255 / .25) inset;
+      --paper: #ffffff; --border: #e9edf5;
     }
-    *{box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact}
-    html,body{height:100%}
-    body{
-      margin:0; background:linear-gradient(180deg,var(--bg),var(--bg2));
-      color:var(--text); font-family:"Cairo","Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans Arabic",sans-serif;
-    }
-    a{color:var(--brand); text-decoration:none}
-    .container{max-width:1200px;margin:auto;padding:18px}
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      background:linear-gradient(180deg,#0f1933,#0b1220);
-      border:1px solid #203055;border-radius:16px;padding:12px 14px;margin-bottom:14px;
-      position:sticky; top:8px; z-index:10;
-    }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-    .badge{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
-      background:radial-gradient(circle at 30% 30%,var(--brand),#6dd3ff 40%,#0049ff); box-shadow:0 6px 18px rgba(0,0,0,.25)}
-    .lang{display:flex;gap:8px;align-items:center}
-    .seg{display:inline-flex;border:1px solid #223555;border-radius:12px;overflow:hidden}
-    .seg button{background:#0e1626;color:var(--text);border:0;padding:8px 10px;cursor:pointer;font-weight:700}
-    .seg button[aria-pressed="true"]{background:linear-gradient(180deg,#14243f,#0f1a32);box-shadow:var(--ring)}
-    .main{display:grid;grid-template-columns:420px 1fr;gap:16px}
-    @media (max-width:1020px){.main{grid-template-columns:1fr}}
-    .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid #223555;border-radius:18px;padding:16px;box-shadow:0 14px 30px rgba(0,0,0,.25)}
-    .card h2{margin:0 0 8px;font-size:20px}
-    .muted{color:var(--muted);font-size:13px}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .field{display:flex;flex-direction:column;gap:6px;margin:8px 0}
-    .field label{font-size:13px;color:#c8d3ee}
-    .input,.textarea{width:100%;padding:11px 12px;border-radius:12px;border:1px solid #2a3c62;background:#0f1a30;color:var(--text);outline:none}
-    .input:focus,.textarea:focus{box-shadow:var(--ring);border-color:#2a4c88}
-    .textarea{min-height:110px;resize:vertical}
-    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid #2b3e66;background:#14223b;color:var(--text);cursor:pointer}
-    .btn.brand{background:linear-gradient(180deg,#1a6eff,#1147ff);border-color:#2f55ff}
-    .btn.good{background:linear-gradient(180deg,#15803d,#166534);border-color:#2e7d32}
-    .btn.warn{background:linear-gradient(180deg,#d97706,#b45309);border-color:#b45309}
-    .cv{background:linear-gradient(180deg,#0e1529,#0c1222);border:1px solid #273455;border-radius:16px;padding:16px}
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+    html, body { height: 100% }
+    body {
+      margin: 0; background: linear-gradient(180deg, var(--bg), var(--bg2));
+      color: var(--text); font-family: "Cairo", "Inter", system-ui, -apple-system, Segoe UI, Robot
+```javascript
+// ===== i18n =====
+const i18n = {
+  ar: {
+    dir: "rtl",
+    "t-app": "خدمات السيرة الذاتية", "t-sub": "منشئ سيرة ذاتية احترافي يعمل على كل الأجهزة",
+    "t-lang": "اللغة", "t-form": "البيانات", "t-form-hint": "املأ الحقول ثم حدّث المعاينة واضغط تنزيل PDF.",
+    "l-name": "الاسم الكامل", "l-role": "المسمى الوظيفي", "l-city": "المدينة/الدولة", "l-phone": "الهاتف",
+    "l-email": "البريد", "l-website": "الموقع/لينكدإن", "l-summary": "الملخص المهني",
+    "l-exp": "الخبرات (سطر لكل خبرة)", "l-edu": "التعليم", "l-skills": "المهارات (مفصولة بفواصل)", "l-photo": "الصورة (اختياري)",
+    "t-photo-hint": "يتم تصغير الصورة تلقائيًا لتحسين الأداء.",
+    "t-update": "تحديث المعاينة", "t-download": "تنزيل PDF", "t-clear": "تفريغ",
+    "t-preview": "المعاينة", "t-skills-h": "المهارات", "t-summary-h": "الملخص", "t-exp-h": "الخبرات", "t-edu-h": "التعليم",
+    "t-local": "* يتم الحفظ محليًا في متصفحك.",
+    "ph-name": "الاسم الكامل", "ph-role": "مثال: مطوّر واجهات", "ph-city": "مثال: برلين، ألمانيا", "ph-phone": "+49 0000 000000", "ph-email": "you@example.com", "ph-web": "linkedin.com/in/you",
+    "ov-prep": "يتم التحضير…", "ov-wait": "انتظر قليلًا من فضلك.", "ov-export": "توليد PDF…", "ov-done": "تمّ التحميل ✅",
+    "err-export": "حدثت مشكلة أثناء توليد PDF. جرّب ثانية أو قلل حجم الصور.",
+    "err-photo": "فشل تحميل الصورة. تأكد من أن الملف صالح وحاول مرة أخرى.",
+    "err-empty": "يرجى إدخال بعض البيانات قبل تصدير السيرة الذاتية.",
+    "err-email": "يرجى إدخال بريد إلكتروني صالح.",
+    "err-phone": "يرجى إدخال رقم هاتف صالح.",
+    "err-libs": "فشل تحميل المكتبات المطلوبة. تحقق من اتصالك بالإنترنت وحاول مرة أخرى."
+  },
+  en: {
+    dir: "ltr",
+    "t-app": "CV Builder", "t-sub": "Professional résumé builder that works on every device",
+    "t-lang": "Language", "t-form": "Details", "t-form-hint": "Fill the fields, update preview, then download the PDF.",
+    "l-name": "Full Name", "l-role": "Job Title", "l-city": "City/Country", "l-phone": "Phone",
+    "l-email": "Email", "l-website": "Website/LinkedIn", "l-summary": "Professional Summary",
+    "l-exp": "Experience (one per line)", "l-edu": "Education", "l-skills": "Skills (comma-separated)", "l-photo": "Photo (optional)",
+    "t-photo-hint": "Your photo is automatically downsized for performance.",
+    "t-update": "Update Preview", "t-download": "Download PDF", "t-clear": "Clear",
+    "t-preview": "Preview", "t-skills-h": "Skills", "t-summary-h": "Summary", "t-exp-h": "Experience", "t-edu-h": "Education", "t-local": "* Data is saved locally in your browser.",
+    "ph-name": "Full Name", "ph-role": "e.g., Frontend Developer", "ph-city": "e.g., Berlin, Germany", "ph-phone": "+49 0000 000000", "ph-email": "you@example.com", "ph-web": "linkedin.com/in/you",
+    "ov-prep": "Preparing…", "ov-wait": "Please wait a moment.", "ov-export": "Generating PDF…", "ov-done": "Downloaded ✅",
+    "err-export": "There was a problem generating the PDF. Try again or use smaller images.",
+    "err-photo": "Failed to load the image. Ensure the file is valid and try again.",
+    "err-empty": "Please enter some data before exporting the CV.",
+    "err-email": "Please enter a valid email address.",
+    "err-phone": "Please enter a valid phone number.",
+    "err-libs": "Failed to load required libraries. Check your internet connection and try again."
+  },
+  de: {
+    dir: "ltr",
+    "t-app": "Lebenslauf-Builder", "t-sub": "Professioneller Lebenslauf-Generator für alle Geräte",
+    "t-lang": "Sprache", "t-form": "Daten", "t-form-hint": "Felder ausfüllen, Vorschau aktualisieren und als PDF herunterladen.",
+    "l-name": "Vollständiger Name", "l-role": "Berufsbezeichnung", "l-city": "Stadt/Land", "l-phone": "Telefon",
+    "l-email": "E-Mail", "l-website": "Website/LinkedIn", "l-summary": "Berufliches Profil",
+    "l-exp": "Erfahrung (eine pro Zeile)", "l-edu": "Ausbildung", "l-skills": "Fähigkeiten (durch Komma getrennt)", "l-photo": "Foto (optional)",
+    "t-photo-hint": "Ihr Foto wird automatisch verkleinert.",
+    "t-update": "Vorschau aktualisieren", "t-download": "PDF herunterladen", "t-clear": "Leeren",
+    "t-preview": "Vorschau", "t-skills-h": "Fähigkeiten", "t-summary-h": "Zusammenfassung", "t-exp-h": "Erfahrung", "t-edu-h": "Ausbildung",
+    "t-local": "* Daten werden lokal gespeichert.",
+    "ph-name": "Vollständiger Name", "ph-role": "z. B. Frontend-Entwickler", "ph-city": "z. B. Berlin, Deutschland", "ph-phone": "+49 0000 000000", "ph-email": "you@example.com", "ph-web": "linkedin.com/in/you",
+    "ov-prep": "Wird vorbereitet…", "ov-wait": "Bitte einen Moment warten.", "ov-export": "PDF wird erstellt…", "ov-done": "Heruntergeladen ✅",
+    "err-export": "Beim Erstellen des PDFs ist ein Problem aufgetreten. Versuchen Sie es erneut oder verwenden Sie kleinere Bilder.",
+    "err-photo": "Fehler beim Laden des Bildes. Stellen Sie sicher, dass die Datei gültig ist und versuchen Sie es erneut.",
+    "err-empty": "Bitte geben Sie einige Daten ein, bevor Sie den Lebenslauf exportieren.",
+    "err-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+    "err-phone": "Bitte geben Sie eine gültige Telefonnummer ein.",
+    "err-libs": "Fehler beim Laden der erforderlichen Bibliotheken. Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut."
+  }
+};
 
-    /* ورقة A4 تقريبًا للشاشة */
-    .sheet{
-      width:794px; min-height:1123px; margin:auto; background:var(--paper); color:var(--ink);
-      border-radius:8px; box-shadow:0 0 0 1px var(--border) inset, 0 10px 30px rgba(0,0,0,.2);
-      overflow:hidden;
-    }
-    @media (max-width:820px){.sheet{width:100%}}
+const $ = s => document.querySelector(s);
 
-    .cv-header{display:flex;gap:16px;align-items:center;padding:22px 26px;background:linear-gradient(90deg,#0b1220 0%,#133869 100%);color:#fff}
-    .avatar{width:84px;height:84px;border-radius:50%;background:#d1d5db;overflow:hidden;border:3px solid rgba(255,255,255,.18)}
-    .avatar img{width:100%;height:100%;object-fit:cover}
-    .avatar:empty{display:none} /* إخفاء إطار الصورة عند عدم وجود صورة */
-    .cv-titlebox{display:flex;flex-direction:column}
-    .cv-name{font-size:26px;font-weight:800;margin:0;color:#fff}
-    .cv-role{opacity:.95}
-    .cv-body{display:grid;grid-template-columns:280px 1fr}
-    @media (max-width:720px){.cv-body{grid-template-columns:1fr}}
-    .cv-side{background:#f6f8fc;padding:18px}
-    .cv-main{padding:22px}
-    .block{margin-bottom:14px}
-    .block h3{margin:0 0 6px;font-size:14px;color:#0b1325}
-    .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px;margin:0 6px 6px 0}
-    .contact{font-size:13px;color:#ffffffcc}
-    .hr{height:1px;background:#e6eaf3;margin:10px 0}
-    .footer-note{margin-top:18px;text-align:center;font-size:12px;color:var(--muted)}
+function setLang(lang) {
+  const dict = i18n[lang] || i18n.ar;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = dict.dir;
+  ["t-app", "t-sub", "t-lang", "t-form", "t-form-hint", "l-name", "l-role", "l-city", "l-phone", "l-email", "l-website", "l-summary", "l-exp", "l-edu", "l-skills", "l-photo", "t-photo-hint", "t-update", "t-download", "t-clear", "t-preview", "t-skills-h", "t-summary-h", "t-exp-h", "t-edu-h", "t-local", "ov-prep", "ov-wait"].forEach(k => {
+    const el = document.getElementById(k);
+    if (el) el.textContent = dict[k];
+  });
+  $("#i-name").placeholder = dict["ph-name"];
+  $("#i-role").placeholder = dict["ph-role"];
+  $("#i-city").placeholder = dict["ph-city"];
+  $("#i-phone").placeholder = dict["ph-phone"];
+  $("#i-email").placeholder = dict["ph-email"];
+  $("#i-web").placeholder = dict["ph-web"];
+  localStorage.setItem("cv-lang", lang);
+  $("#btn-ar").setAttribute("aria-pressed", lang === "ar");
+  $("#btn-en").setAttribute("aria-pressed", lang === "en");
+  $("#btn-de").setAttribute("aria-pressed", lang === "de");
+  render(load() || {});
+}
 
-    @page{size:A4;margin:10mm}
-    @media print{body{background:#fff}.container,.topbar{display:none!important}.sheet{box-shadow:none!important}}
+$("#btn-ar").onclick = () => setLang("ar");
+$("#btn-en").onclick = () => setLang("en");
+$("#btn-de").onclick = () => setLang("de");
 
-    /* Overlay */
-    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(5,10,20,.55);z-index:99999;backdrop-filter:blur(2px)}
-    .overlay.show{display:flex}
-    .dialog{min-width:260px;max-width:90vw;background:#0f1933;color:#e4ebff;border:1px solid #2a3f6a;border-radius:14px;padding:14px}
-    .dialog .title{font-weight:800;margin:0 0 6px}
-    .dialog .msg{font-size:14px;color:#bfd0ff}
-    .spinner{width:36px;height:36px;border-radius:50%;border:4px solid #2a3f6a;border-top-color:#4ea3ff;animation:spin 1s linear infinite;margin:10px auto}
-    @keyframes spin{to{transform:rotate(360deg)}}
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header class="topbar">
-      <div class="brand">
-        <div class="badge">📄</div>
-        <div style="display:flex;flex-direction:column">
-          <strong id="t-app">خدمات السيرة الذاتية</strong>
-          <small class="muted" id="t-sub">منشئ سيرة ذاتية احترافي يعمل على كل الأجهزة</small>
-        </div>
-      </div>
-      <div class="lang">
-        <span class="muted" id="t-lang">اللغة</span>
-        <div class="seg" role="group" aria-label="Language">
-          <button id="btn-ar" aria-pressed="true">AR</button>
-          <button id="btn-en" aria-pressed="false">EN</button>
-          <button id="btn-de" aria-pressed="false">DE</button>
-        </div>
-      </div>
-    </header>
+// ===== Data helpers =====
+function lines(v) { return (v || "").split(/\r?\n/).map(s => s.trim()).filter(Boolean); }
+function tags(v) { return (v || "").split(",").map(s => s.trim()).filter(Boolean); }
 
-    <main class="main">
-      <section class="card">
-        <h2 id="t-form">البيانات</h2>
-        <p class="muted" id="t-form-hint">املأ الحقول ثم حدّث المعاينة واضغط تنزيل PDF.</p>
+function save() {
+  const data = {
+    name: $("#i-name").value || "",
+    role: $("#i-role").value || "",
+    city: $("#i-city").value || "",
+    phone: $("#i-phone").value || "",
+    email: $("#i-email").value || "",
+    web: $("#i-web").value || "",
+    summary: $("#i-summary").value || "",
+    exp: lines($("#i-exp").value),
+    edu: lines($("#i-edu").value),
+    skills: tags($("#i-skills").value),
+    photo: localStorage.getItem("cv-photo") || null,
+  };
+  localStorage.setItem("cv-data", JSON.stringify(data));
+  return data;
+}
 
-        <div class="field"><label id="l-name">الاسم الكامل</label><input id="i-name" class="input" placeholder="الاسم الكامل" /></div>
-        <div class="field"><label id="l-role">المسمى الوظيفي</label><input id="i-role" class="input" placeholder="مثال: مطوّر واجهات" /></div>
-        <div class="grid2">
-          <div class="field"><label id="l-city">المدينة/الدولة</label><input id="i-city" class="input" placeholder="مثال: برلين، ألمانيا" /></div>
-          <div class="field"><label id="l-phone">الهاتف</label><input id="i-phone" class="input" placeholder="+49 0000 000000" /></div>
-        </div>
-        <div class="grid2">
-          <div class="field"><label id="l-email">البريد</label><input id="i-email" class="input" placeholder="you@example.com" /></div>
-          <div class="field"><label id="l-website">الموقع/لينكدإن</label><input id="i-web" class="input" placeholder="linkedin.com/in/you" /></div>
-        </div>
+function load() {
+  try {
+    return JSON.parse(localStorage.getItem("cv-data")) || null;
+  } catch {
+    return null;
+  }
+}
 
-        <div class="field"><label id="l-summary">الملخص المهني</label>
-          <textarea id="i-summary" class="textarea" placeholder="نبذة قصيرة عن خبرتك وإنجازاتك..."></textarea>
-        </div>
+function render(data) {
+  const dict = i18n[document.documentElement.lang] || i18n.ar;
+  $("#v-name").textContent = data.name || dict["ph-name"] || "Full Name";
+  $("#v-role").textContent = data.role || dict["ph-role"] || "Job Title";
+  const parts = [];
+  if (data.city) parts.push(data.city);
+  if (data.phone) parts.push(data.phone);
+  if (data.email) parts.push(data.email);
+  if (data.web) parts.push(data.web);
+  $("#v-contact").textContent = parts.join(" • ");
+  $("#v-summary").textContent = data.summary || (dict["t-summary-h"] + "...");
+  const skillsBox = $("#v-skills");
+  skillsBox.innerHTML = "";
+  (data.skills || []).forEach(s => {
+    const t = document.createElement("span");
+    t.className = "tag";
+    t.textContent = s;
+    skillsBox.appendChild(t);
+  });
+  const expV = $("#v-exp");
+  expV.innerHTML = "";
+  (data.exp || []).forEach(l => {
+    const p = document.createElement("p");
+    p.style.margin = "0 0 6px";
+    p.style.color = "#0b1325";
+    p.textContent = l;
+    expV.appendChild(p);
+  });
+  const eduV = $("#v-edu");
+  eduV.innerHTML = "";
+  (data.edu || []).forEach(l => {
+    const p = document.createElement("p");
+    p.style.margin = "0 0 6px";
+    p.style.color = "#0b1325";
+    p.textContent = l;
+    eduV.appendChild(p);
+  });
+  const av = $("#v-avatar");
+  av.innerHTML = data.photo ? `<img src="${data.photo}" alt="photo" />` : "";
+}
 
-        <div class="field"><label id="l-exp">الخبرات (سطر لكل خبرة)</label>
-          <textarea id="i-exp" class="textarea" placeholder="الشركة — المنصب — المدة&#10;..."></textarea>
-        </div>
+// ===== Debounce for performance =====
+function debounce(fn, wait) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), wait);
+  };
+}
+const debouncedRender = debounce(() => render(save()), 300);
+["i-name", "i-role", "i-city", "i-phone", "i-email", "i-web", "i-summary", "i-exp", "i-edu", "i-skills"].forEach(id => {
+  document.getElementById(id).addEventListener("input", debouncedRender);
+});
+document.getElementById("btn-update").onclick = () => render(save());
+document.getElementById("btn-clear").onclick = () => {
+  ["i-name", "i-role", "i-city", "i-phone", "i-email", "i-web", "i-summary", "i-exp", "i-edu", "i-skills"].forEach(id => $("#" + id).value = "");
+  localStorage.removeItem("cv-data");
+  localStorage.removeItem("cv-photo");
+  render(save());
+};
 
-        <div class="field"><label id="l-edu">التعليم</label>
-          <textarea id="i-edu" class="textarea" placeholder="الجامعة — الدرجة — السنة&#10;..."></textarea>
-        </div>
-
-        <div class="field"><label id="l-skills">المهارات (مفصولة بفواصل)</label>
-          <input id="i-skills" class="input" placeholder="JavaScript, React, Teamwork, ..." />
-        </div>
-
-        <div class="field"><label id="l-photo">الصورة (اختياري)</label>
-          <input type="file" id="i-photo" class="input" accept="image/*" />
-          <small class="hint" id="t-photo-hint">يتم تصغير الصورة تلقائيًا لتحسين الأداء.</small>
-        </div>
-
-        <div class="row" style="margin-top:6px">
-          <button class="btn brand" id="btn-update">🔁 <span id="t-update">تحديث المعاينة</span></button>
-          <button class="btn good" id="btn-download">⬇️ <span id="t-download">تنزيل PDF</span></button>
-          <button class="btn warn" id="btn-clear">🧹 <span id="t-clear">تفريغ</span></button>
-        </div>
-      </section>
-
-      <section class="card cv">
-        <h2 id="t-preview">المعاينة</h2>
-        <div id="sheet" class="sheet" aria-label="A4 Preview">
-          <div class="cv-header">
-            <div class="avatar" id="v-avatar"></div>
-            <div class="cv-titlebox">
-              <h1 class="cv-name" id="v-name">الاسم الكامل</h1>
-              <div class="cv-role" id="v-role">المسمى الوظيفي</div>
-              <div class="contact" id="v-contact">المدينة • الهاتف • البريد • الموقع</div>
-            </div>
-          </div>
-          <div class="cv-body">
-            <aside class="cv-side">
-              <div class="block">
-                <h3 id="t-skills-h">المهارات</h3>
-                <div id="v-skills"></div>
-              </div>
-            </aside>
-            <main class="cv-main">
-              <section class="block">
-                <h3 id="t-summary-h">الملخص</h3>
-                <p id="v-summary">اكتب ملخصك المهني بإيجاز ووضوح.</p>
-              </section>
-              <div class="hr"></div>
-              <section class="block">
-                <h3 id="t-exp-h">الخبرات</h3>
-                <div id="v-exp"></div>
-              </section>
-              <div class="hr"></div>
-              <section class="block">
-                <h3 id="t-edu-h">التعليم</h3>
-                <div id="v-edu"></div>
-              </section>
-            </main>
-          </div>
-        </div>
-        <div class="footer-note" id="t-local">* يتم الحفظ محليًا في متصفحك.</div>
-      </section>
-    </main>
-  </div>
-
-  <div id="overlay" class="overlay" aria-live="polite" aria-modal="true" role="dialog">
-    <div class="dialog">
-      <div class="title" id="ov-title">يتم التحضير…</div>
-      <div class="spinner" id="ov-spin"></div>
-      <div class="msg" id="ov-msg">انتظر قليلًا من فضلك.</div>
-    </div>
-  </div>
-
-  <!-- المكتبات -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <script>
-    // ===== i18n =====
-    const i18n = {
-      ar:{ dir:"rtl",
-        "t-app":"خدمات السيرة الذاتية","t-sub":"منشئ سيرة ذاتية احترافي يعمل على كل الأجهزة",
-        "t-lang":"اللغة","t-form":"البيانات","t-form-hint":"املأ الحقول ثم حدّث المعاينة واضغط تنزيل PDF.",
-        "l-name":"الاسم الكامل","l-role":"المسمى الوظيفي","l-city":"المدينة/الدولة","l-phone":"الهاتف",
-        "l-email":"البريد","l-website":"الموقع/لينكدإن","l-summary":"الملخص المهني",
-        "l-exp":"الخبرات (سطر لكل خبرة)","l-edu":"التعليم","l-skills":"المهارات (مفصولة بفواصل)","l-photo":"الصورة (اختياري)",
-        "t-photo-hint":"يتم تصغير الصورة تلقائيًا لتحسين الأداء.",
-        "t-update":"تحديث المعاينة","t-download":"تنزيل PDF","t-clear":"تفريغ",
-        "t-preview":"المعاينة","t-skills-h":"المهارات","t-summary-h":"الملخص","t-exp-h":"الخبرات","t-edu-h":"التعليم",
-        "t-local":"* يتم الحفظ محليًا في متصفحك.",
-        "ph-name":"الاسم الكامل","ph-role":"مثال: مطوّر واجهات","ph-city":"مثال: برلين، ألمانيا","ph-phone":"+49 0000 000000","ph-email":"you@example.com","ph-web":"linkedin.com/in/you",
-        "ov-prep":"يتم التحضير…","ov-wait":"انتظر قليلًا من فضلك.","ov-export":"توليد PDF…","ov-done":"تمّ التحميل ✅",
-        "err-export":"حدثت مشكلة أثناء توليد PDF. جرّب ثانية أو قلل حجم الصور."
-      },
-      en:{ dir:"ltr",
-        "t-app":"CV Builder","t-sub":"Professional résumé builder that works on every device",
-        "t-lang":"Language","t-form":"Details","t-form-hint":"Fill the fields, update preview, then download the PDF.",
-        "l-name":"Full Name","l-role":"Job Title","l-city":"City/Country","l-phone":"Phone",
-        "l-email":"Email","l-website":"Website/LinkedIn","l-summary":"Professional Summary",
-        "l-exp":"Experience (one per line)","l-edu":"Education","l-skills":"Skills (comma-separated)","l-photo":"Photo (optional)",
-        "t-photo-hint":"Your photo is automatically downsized for performance.",
-        "t-update":"Update Preview","t-download":"Download PDF","t-clear":"Clear",
-        "t-preview":"Preview","t-skills-h":"Skills","t-summary-h":"Summary","t-exp-h":"Experience","t-edu-h":"Education","t-local":"* Data is saved locally in your browser.",
-        "ph-name":"Full Name","ph-role":"e.g., Frontend Developer","ph-city":"e.g., Berlin, Germany","ph-phone":"+49 0000 000000","ph-email":"you@example.com","ph-web":"linkedin.com/in/you",
-        "ov-prep":"Preparing…","ov-wait":"Please wait a moment.","ov-export":"Generating PDF…","ov-done":"Downloaded ✅",
-        "err-export":"There was a problem generating the PDF. Try again or use smaller images."
-      },
-      de:{ dir:"ltr",
-        "t-app":"Lebenslauf-Builder","t-sub":"Professioneller Lebenslauf-Generator für alle Geräte",
-        "t-lang":"Sprache","t-form":"Daten","t-form-hint":"Felder ausfüllen, Vorschau aktualisieren und als PDF herunterladen.",
-        "l-name":"Vollständiger Name","l-role":"Berufsbezeichnung","l-city":"Stadt/Land","l-phone":"Telefon",
-        "l-email":"E-Mail","l-website":"Website/LinkedIn","l-summary":"Berufliches Profil",
-        "l-exp":"Erfahrung (eine pro Zeile)","l-edu":"Ausbildung","l-skills":"Fähigkeiten (durch Komma getrennt)","l-photo":"Foto (optional)",
-        "t-photo-hint":"Ihr Foto wird automatisch verkleinert.",
-        "t-update":"Vorschau aktualisieren","t-download":"PDF herunterladen","t-clear":"Leeren",
-        "t-preview":"Vorschau","t-skills-h":"Fähigkeiten","t-summary-h":"Zusammenfassung","t-exp-h":"Erfahrung","t-edu-h":"Ausbildung",
-        "t-local":"* Daten werden lokal gespeichert.",
-        "ph-name":"Vollständiger Name","ph-role":"z. B. Frontend-Entwickler","ph-city":"z. B. Berlin, Deutschland","ph-phone":"+49 0000 000000","ph-email":"you@example.com","ph-web":"linkedin.com/in/you",
-        "ov-prep":"Wird vorbereitet…","ov-wait":"Bitte einen Moment warten.","ov-export":"PDF wird erstellt…","ov-done":"Heruntergeladen ✅",
-        "err-export":"Beim Erstellen des PDFs ist ein Problem aufgetreten. Versuchen Sie es erneut oder verwenden Sie kleinere Bilder."
-      }
-    };
-
-    const $ = s => document.querySelector(s);
-
-    function setLang(lang){
-      const dict = i18n[lang] || i18n.ar;
-      document.documentElement.lang = lang;
-      document.documentElement.dir = dict.dir;
-      ["t-app","t-sub","t-lang","t-form","t-form-hint","l-name","l-role","l-city","l-phone","l-email","l-website","l-summary","l-exp","l-edu","l-skills","l-photo","t-photo-hint","t-update","t-download","t-clear","t-preview","t-skills-h","t-summary-h","t-exp-h","t-edu-h","t-local","ov-prep","ov-wait"]
-        .forEach(k=>{ const el=document.getElementById(k); if(el) el.textContent=dict[k]; });
-      $("#i-name").placeholder = dict["ph-name"]; $("#i-role").placeholder = dict["ph-role"]; $("#i-city").placeholder = dict["ph-city"]; $("#i-phone").placeholder = dict["ph-phone"]; $("#i-email").placeholder = dict["ph-email"]; $("#i-web").placeholder = dict["ph-web"];
-      localStorage.setItem("cv-lang", lang);
-      $("#btn-ar").setAttribute("aria-pressed", lang==="ar"); $("#btn-en").setAttribute("aria-pressed", lang==="en"); $("#btn-de").setAttribute("aria-pressed", lang==="de");
-      render(load()||{});
-    }
-    $("#btn-ar").onclick = ()=> setLang("ar");
-    $("#btn-en").onclick = ()=> setLang("en");
-    $("#btn-de").onclick = ()=> setLang("de");
-
-    // ===== Data helpers =====
-    function lines(v){ return (v||"").split(/\r?\n/).map(s=>s.trim()).filter(Boolean); }
-    function tags(v){ return (v||"").split(",").map(s=>s.trim()).filter(Boolean); }
-
-    function save(){
-      const data = {
-        name: $("#i-name").value || "",
-        role: $("#i-role").value || "",
-        city: $("#i-city").value || "",
-        phone: $("#i-phone").value || "",
-        email: $("#i-email").value || "",
-        web: $("#i-web").value || "",
-        summary: $("#i-summary").value || "",
-        exp: lines($("#i-exp").value),
-        edu: lines($("#i-edu").value),
-        skills: tags($("#i-skills").value),
-        photo: localStorage.getItem("cv-photo") || null,
-      };
-      localStorage.setItem("cv-data", JSON.stringify(data));
-      return data;
-    }
-    function load(){ try { return JSON.parse(localStorage.getItem("cv-data")) || null; } catch{ return null; } }
-
-    function render(data){
-      const dict = i18n[document.documentElement.lang] || i18n.ar;
-      $("#v-name").textContent = data.name || dict["ph-name"] || "Full Name";
-      $("#v-role").textContent = data.role || dict["ph-role"] || "Job Title";
-      const parts=[]; if(data.city)parts.push(data.city); if(data.phone)parts.push(data.phone); if(data.email)parts.push(data.email); if(data.web)parts.push(data.web);
-      $("#v-contact").textContent = parts.join(" • ");
-      $("#v-summary").textContent = data.summary || (dict["t-summary-h"] + "...");
-      const skillsBox = $("#v-skills"); skillsBox.innerHTML = "";
-      (data.skills||[]).forEach(s=>{ const t=document.createElement("span"); t.className="tag"; t.textContent=s; skillsBox.appendChild(t); });
-      const expV=$("#v-exp"); expV.innerHTML=""; (data.exp||[]).forEach(l=>{ const p=document.createElement("p"); p.style.margin="0 0 6px"; p.style.color="#0b1325"; p.textContent=l; expV.appendChild(p); });
-      const eduV=$("#v-edu"); eduV.innerHTML=""; (data.edu||[]).forEach(l=>{ const p=document.createElement("p"); p.style.margin="0 0 6px"; p.style.color="#0b1325"; p.textContent=l; eduV.appendChild(p); });
-      const av=$("#v-avatar"); av.innerHTML = data.photo ? `<img src="${data.photo}" alt="photo" />` : "";
-    }
-
-    ["i-name","i-role","i-city","i-phone","i-email","i-web","i-summary","i-exp","i-edu","i-skills"].forEach(id=>{
-      document.getElementById(id).addEventListener("input", ()=>{ render(save()); });
-    });
-    document.getElementById("btn-update").onclick = ()=>{ render(save()); };
-    document.getElementById("btn-clear").onclick = ()=>{
-      ["i-name","i-role","i-city","i-phone","i-email","i-web","i-summary","i-exp","i-edu","i-skills"].forEach(id=>$("#"+id).value="");
-      localStorage.removeItem("cv-data"); localStorage.removeItem("cv-photo"); render(save());
-    };
-
-    // صورة مع تصغير
-    document.getElementById("i-photo").addEventListener("change", async (e)=>{
-      const f = e.target.files && e.target.files[0]; if(!f) return;
-      const dataUrl = await new Promise((resolve,reject)=>{
-        const reader = new FileReader();
-        reader.onload = ()=>{
-          const img = new Image();
-          img.onload = ()=>{
-            const maxSide = 1200;
-            const ratio = Math.min(1, maxSide / Math.max(img.width, img.height));
-            const w = Math.round(img.width * ratio), h = Math.round(img.height * ratio);
-            const c = document.createElement("canvas"); c.width = w; c.height = h;
-            const ctx = c.getContext("2d"); ctx.drawImage(img,0,0,w,h);
-            resolve(c.toDataURL("image/jpeg",0.9));
-          };
-          img.onerror = reject; img.src = reader.result;
+// ===== Photo handling with size check =====
+document.getElementById("i-photo").addEventListener("change", async (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  const dict = i18n[document.documentElement.lang] || i18n.ar;
+  try {
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const maxSide = 1200;
+          const ratio = Math.min(1, maxSide / Math.max(img.width, img.height));
+          const w = Math.round(img.width * ratio);
+          const h = Math.round(img.height * ratio);
+          const c = document.createElement("canvas");
+          c.width = w;
+          c.height = h;
+          const ctx = c.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = c.toDataURL("image/jpeg", 0.9);
+          const sizeInMB = (dataUrl.length * 3 / 4) / (1024 * 1024);
+          if (sizeInMB > 4) {
+            reject(new Error("Image too large"));
+          } else {
+            resolve(dataUrl);
+          }
         };
-        reader.onerror = reject; reader.readAsDataURL(f);
-      });
-      localStorage.setItem("cv-photo", dataUrl);
-      render(save());
+        img.onerror = () => reject(new Error("Failed to load image"));
+        img.src = reader.result;
+      };
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(f);
+    });
+    localStorage.setItem("cv-photo", dataUrl);
+    render(save());
+  } catch (err) {
+    alert(dict["err-photo"] || "Failed to load the image. Ensure the file is valid and try again.");
+  }
+});
+
+// ===== Overlay helpers =====
+const overlay = document.getElementById("overlay"),
+  ovTitle = document.getElementById("ov-title"),
+  ovMsg = document.getElementById("ov-msg");
+function showOverlay(title, msg, spin = true) {
+  overlay.classList.add("show");
+  ovTitle.textContent = title;
+  ovMsg.textContent = msg;
+  document.getElementById("ov-spin").style.display = spin ? "block" : "none";
+}
+function hideOverlay() { overlay.classList.remove("show"); }
+
+// ===== Input validation =====
+function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+function validatePhone(phone) { return /^\+?[\d\s-]{7,}$/.test(phone); }
+
+// ===== PDF Export =====
+document.getElementById("btn-download").onclick = async () => {
+  const dict = i18n[document.documentElement.lang] || i18n.ar;
+  const data = save();
+  if (!data.name && !data.role && !data.summary && !data.exp.length && !data.edu.length && !data.skills.length) {
+    alert(dict["err-empty"] || "Please enter some data before exporting the CV.");
+    return;
+  }
+  if (data.email && !validateEmail(data.email)) {
+    alert(dict["err-email"] || "Please enter a valid email address.");
+    return;
+  }
+  if (data.phone && !validatePhone(data.phone)) {
+    alert(dict["err-phone"] || "Please enter a valid phone number.");
+    return;
+  }
+  if (!window.html2canvas || !window.jspdf) {
+    alert(dict["err-libs"] || "Failed to load required libraries. Check your internet connection and try again.");
+    return;
+  }
+
+  showOverlay(dict["ov-export"] || "Generating PDF…", dict["ov-wait"] || "Please wait…", true);
+  let wrapper;
+  try {
+    render(save());
+    if (document.fonts && document.fonts.ready) {
+      try {
+        await document.fonts.ready;
+      } catch {}
+    }
+
+    const sheet = document.getElementById("sheet");
+    const clone = sheet.cloneNode(true);
+    clone.setAttribute("dir", document.documentElement.dir);
+    clone.style.boxShadow = "none";
+    clone.style.border = "0";
+    clone.style.borderRadius = "0";
+
+    wrapper = document.createElement("div");
+    Object.assign(wrapper.style, {
+      position: "fixed",
+      left: "-10000px",
+      top: "0",
+      background: "#ffffff",
+      padding: "0",
+      margin: "0",
+      width: sheet.offsetWidth + "px",
+      zIndex: 9999
+    });
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+    void wrapper.offsetHeight;
+
+    const imgs = Array.from(wrapper.querySelectorAll("img"));
+    if (imgs.length) {
+      await Promise.all(imgs.map(img => {
+        if (img.complete && img.naturalWidth) return;
+        return new Promise(res => {
+          img.onload = res;
+          img.onerror = res;
+        });
+      }));
+    }
+
+    const scale = Math.min(2, Math.max(1.5, (window.devicePixelRatio || 1)));
+    const canvas = await html2canvas(wrapper, {
+      scale,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      removeContainer: true,
+      imageTimeout: 15000,
+      quality: 0.85
     });
 
-    // ===== Overlay helpers =====
-    const overlay = document.getElementById("overlay"), ovTitle=document.getElementById("ov-title"), ovMsg=document.getElementById("ov-msg");
-    function showOverlay(title,msg,spin=true){ overlay.classList.add("show"); ovTitle.textContent=title; ovMsg.textContent=msg; document.getElementById("ov-spin").style.display=spin?"block":"none"; }
-    function hideOverlay(){ overlay.classList.remove("show"); }
+    if (!canvas || !canvas.width || !canvas.height) {
+      throw new Error("Empty canvas");
+    }
 
-    // ===== PDF Export — يلتقط الورقة فقط داخل حاوية معزولة =====
-    document.getElementById("btn-download").onclick = async ()=>{
-      const dict = i18n[document.documentElement.lang] || i18n.ar;
-      showOverlay(dict["ov-export"]||"Generating PDF…", dict["ov-wait"]||"Please wait…", true);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait" });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
 
-      try{
-        render(save());
-        if (document.fonts && document.fonts.ready){ try{ await document.fonts.ready; }catch{} }
+    const fitsOnePage = (canvas.height / canvas.width) <= (pageH / pageW) + 1e-4;
+    if (fitsOnePage) {
+      const s = Math.min(pageW / canvas.width, pageH / canvas.height);
+      const imgW = Math.floor(canvas.width * s);
+      const imgH = Math.floor(canvas.height * s);
+      const x = Math.floor((pageW - imgW) / 2);
+      const y = Math.floor((pageH - imgH) / 2);
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      pdf.addImage(imgData, "JPEG", x, y, imgW, imgH);
+    } else {
+      const sliceH = Math.max(1, Math.round(canvas.width * (pageH / pageW)));
+      const overlap = Math.max(2, Math.round(sliceH * 0.01));
+      const slice = document.createElement("canvas");
+      const sctx = slice.getContext("2d", { willReadFrequently: true });
+      slice.width = canvas.width;
 
-        // 1) أنشئ حاوية معزولة للالتقاط
-        const sheet = document.getElementById("sheet");
-        const clone = sheet.cloneNode(true);
-        clone.setAttribute("dir", document.documentElement.dir);
-        // إزالة الظلال/الحدود كي لا تظهر خطوط بين الصفحات
-        clone.style.boxShadow = "none"; clone.style.border = "0"; clone.style.borderRadius = "0";
+      let y = 0, pageIndex = 0;
+      while (y < canvas.height) {
+        const remaining = canvas.height - y;
+        let h = Math.min(sliceH, remaining);
+        if (h <= 2) break;
+        slice.height = h;
+        sctx.clearRect(0, 0, slice.width, slice.height);
+        sctx.drawImage(canvas, 0, Math.floor(y), canvas.width, h, 0, 0, slice.width, h);
 
-        const wrapper = document.createElement("div");
-        Object.assign(wrapper.style,{
-          position:"fixed", left:"-10000px", top:"0",
-          background:"#ffffff", padding:"0", margin:"0",
-          width: sheet.offsetWidth + "px", zIndex: 9999
-        });
-        wrapper.appendChild(clone);
-        document.body.appendChild(wrapper);
-        void wrapper.offsetHeight;
+        const imgData = slice.toDataURL("image/jpeg", 0.95);
+        if (pageIndex > 0) pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, 0, pageW, pageH);
 
-        // 2) انتظر صور النسخة
-        const imgs = Array.from(wrapper.querySelectorAll("img"));
-        if (imgs.length){
-          await Promise.all(imgs.map(img=>{
-            if (img.complete && img.naturalWidth) return;
-            return new Promise(res=>{ img.onload=res; img.onerror=res; });
-          }));
-        }
-
-        // 3) التقط "الحاوية المعزولة" فقط
-        const scale = Math.min(2, Math.max(1.5, (window.devicePixelRatio||1)));
-        const canvas = await html2canvas(wrapper, {
-          scale, useCORS:true, allowTaint:true, backgroundColor:"#ffffff",
-          logging:false, removeContainer:true
-        });
-        try{ wrapper.remove(); }catch{}
-
-        if (!canvas || !canvas.width || !canvas.height){
-          hideOverlay(); alert("Canvas فارغ. أعد المحاولة."); return;
-        }
-
-        // 4) بناء PDF — صفحة واحدة إن أمكن، وإلا تقطيع مضبوط بلا صفحة فارغة
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ unit:"pt", format:"a4", orientation:"portrait" });
-        const pageW = pdf.internal.pageSize.getWidth();
-        const pageH = pdf.internal.pageSize.getHeight();
-
-        const fitsOnePage = (canvas.height / canvas.width) <= (pageH / pageW) + 1e-4;
-        if (fitsOnePage){
-          const s = Math.min(pageW / canvas.width, pageH / canvas.height);
-          const imgW = Math.floor(canvas.width * s);
-          const imgH = Math.floor(canvas.height * s);
-          const x = Math.floor((pageW - imgW) / 2);
-          const y = Math.floor((pageH - imgH) / 2);
-          const imgData = canvas.toDataURL("image/jpeg", 0.95);
-          pdf.addImage(imgData, "JPEG", x, y, imgW, imgH);
-        }else{
-          const sliceH = Math.max(1, Math.round(canvas.width * (pageH / pageW)));
-          const overlap = 2;
-          const slice = document.createElement("canvas");
-          const sctx = slice.getContext("2d", { willReadFrequently:true });
-          slice.width = canvas.width;
-
-          let y = 0, pageIndex = 0;
-          while (y < canvas.height){
-            const remaining = canvas.height - y;
-            let h = Math.min(sliceH, remaining);
-            if (h <= 2) break;         // لا صفحة فارغة
-            slice.height = h;
-            sctx.clearRect(0,0,slice.width,slice.height);
-            sctx.drawImage(canvas, 0, Math.floor(y), canvas.width, h, 0, 0, slice.width, h);
-
-            const imgData = slice.toDataURL("image/jpeg", 0.95);
-            if (pageIndex > 0) pdf.addPage();
-            pdf.addImage(imgData, "JPEG", 0, 0, pageW, pageH);
-
-            y += h - overlap;          // تداخل بسيط يُزيل خطوط رفيعة
-            pageIndex++;
-          }
-        }
-
-        // 5) تنزيل
-        const raw = (document.getElementById("i-name")?.value || "CV").trim();
-        const fname = (raw||"CV").replace(/[\\/:*?"<>|]+/g,"_").replace(/\s+/g,"_") + ".pdf";
-        try{
-          const blob = pdf.output("blob");
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url; a.download = fname; a.style.display="none";
-          document.body.appendChild(a); a.click();
-          setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1200);
-        }catch(e1){
-          try{
-            const dataUrl = pdf.output("datauristring");
-            const a = document.createElement("a");
-            a.href = dataUrl; a.download = fname; a.style.display="none";
-            document.body.appendChild(a); a.click(); a.remove();
-          }catch(e2){
-            const dataUrl = pdf.output("dataurlstring");
-            const w = window.open();
-            if (w){ w.document.write('<iframe width="100%" height="100%" src="'+dataUrl+'"></iframe>'); }
-            else { alert("المتصفح منع التنزيل."); }
-          }
-        }
-
-        ovTitle.textContent = dict["ov-done"] || "Done";
-        document.getElementById("ov-spin").style.display="none";
-        ovMsg.textContent = "";
-        setTimeout(hideOverlay, 700);
-
-      }catch(err){
-        console.error(err);
-        alert((i18n[document.documentElement.lang]||i18n.ar)["err-export"] || "Export error");
-        hideOverlay();
+        y += h - overlap;
+        pageIndex++;
       }
-    };
+    }
 
-    // ===== Init =====
-    (function init(){
-      const lang = localStorage.getItem("cv-lang") || "ar";
-      setLang(lang);
-      const data = load();
-      if(data){
-        ["i-name","i-role","i-city","i-phone","i-email","i-web"].forEach(id=>$("#"+id).value = data[id.split('-')[1]] || "");
-        $("#i-summary").value = data.summary || "";
-        $("#i-exp").value = (data.exp||[]).join("\n");
-        $("#i-edu").value = (data.edu||[]).join("\n");
-        $("#i-skills").value = (data.skills||[]).join(", ");
-        if(data.photo) localStorage.setItem("cv-photo", data.photo);
-        render(data);
-      }else{
-        render(save());
+    const raw = (document.getElementById("i-name")?.value || "CV").trim();
+    const fname = (raw || "CV").replace(/[\\/:*?"<>|]+/g, "_").replace(/\s+/g, "_") + ".pdf";
+    try {
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fname;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        a.remove();
+      }, 1200);
+    } catch (e1) {
+      try {
+        const dataUrl = pdf.output("datauristring");
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = fname;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch (e2) {
+        const dataUrl = pdf.output("dataurlstring");
+        const w = window.open();
+        if (w) {
+          w.document.write('<iframe width="100%" height="100%" src="' + dataUrl + '"></iframe>');
+        } else {
+          alert("المتصفح منع التنزيل.");
+        }
       }
-    })();
-  </script>
+    }
+
+    ovTitle.textContent = dict["ov-done"] || "Done";
+    document.getElementById("ov-spin").style.display = "none";
+    ovMsg.textContent = "";
+    setTimeout(hideOverlay, 700);
+
+  } catch (err) {
+    console.error(err);
+    alert(dict["err-export"] || "Export error");
+  } finally {
+    if (wrapper) wrapper.remove();
+    hideOverlay();
+  }
+};
+
+// ===== Init =====
+(function init() {
+  const lang = localStorage.getItem("cv-lang") || "ar";
+  setLang(lang);
+  const data = load();
+  if (data) {
+    ["i-name", "i-role", "i-city", "i-phone", "i-email", "i-web"].forEach(id => $("#" + id).value = data[id.split('-')[1]] || "");
+    $("#i-summary").value = data.summary || "";
+    $("#i-exp").value = (data.exp || []).join("\n");
+    $("#i-edu").value = (data.edu || []).join("\n");
+    $("#i-skills").value = (data.skills || []).join(", ");
+    if (data.photo) localStorage.setItem("cv-photo", data.photo);
+    render(data);
+  } else {
+    render(save());
+  }
+})();
+</script>
 </body>
-</html>
+  </html>
