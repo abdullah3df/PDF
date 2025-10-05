@@ -1,589 +1,520 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CV Builder — Classic</title>
-  <meta name="description" content="قالب كلاسيكي للسيرة الذاتية بثلاث لغات، معاينة A4، وتصدير PDF.">
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+  <title>CV Builder — شبيه CV Shop</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <!-- html2pdf for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
   <style>
     :root{
-      --bg:#0b1220; --bg2:#0d152b; --text:#e9eefb; --muted:#9fb0d6; --brand:#3aa9ff;
-      --paper:#ffffff; --border:#e9edf5; --ink:#0b1325;
-      --chip:#e9f3ff; --chip-text:#0a2950;
+      --bg:#0b0d12;          /* خلفية الصفحة */
+      --card:#11151d;        /* خلفية الكروت */
+      --muted:#8b94a7;       /* نص ثانوي */
+      --text:#e9eef7;        /* نص أساسي */
+      --primary:#4f8cff;     /* اللون الرئيسي */
+      --accent:#14b8a6;      /* لون ثانوي */
+      --radius:18px;         /* إنحناء الزوايا */
     }
-    *{box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+    *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; background:linear-gradient(180deg,var(--bg),var(--bg2));
+      margin:0; background:linear-gradient(180deg, #0b0d12, #0b0d12 40%, #0e1117 100%);
+      font-family:"Cairo", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--text);
-      font-family:"Cairo","Inter",system-ui,-apple-system,"Segoe UI","Roboto",Arial,sans-serif;
     }
-
-    /* Top bar */
-    .topbar{
-      max-width:1000px; margin:14px auto 8px; padding:0 12px;
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
+    .container{
+      max-width:1200px; margin:24px auto; padding:16px; display:grid; gap:16px;
+      grid-template-columns: 380px 1fr;
     }
-    .brand{font-size:18px; font-weight:800; letter-spacing:.3px}
-    .langbar{display:flex; gap:6px}
-    .langbar button{
-      background:transparent; color:var(--text);
-      border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:6px 10px;
-      font-weight:800; cursor:pointer;
-    }
-    .langbar button[aria-pressed="true"]{background:var(--brand); color:#041a2e; border-color:transparent}
-
-    /* Card */
-    .card{
-      max-width:1000px; margin:8px auto; padding:0 12px;
+    @media (max-width: 980px){
+      .container{grid-template-columns: 1fr;}
     }
     .panel{
-      background:linear-gradient(180deg,#111a2f,#0e1629);
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
       border:1px solid rgba(255,255,255,.08);
-      border-radius:14px; padding:12px;
-      box-shadow:0 10px 30px rgba(0,0,0,.28);
+      border-radius:var(--radius);
+      box-shadow: 0 20px 60px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
     }
-    .panel h2{margin:0 0 8px; font-size:16px}
-    .hint{color:var(--muted); font-size:13px; margin:4px 0 10px}
+    /* ===== Sidebar (Form) ===== */
+    .sidebar{padding:18px 18px 8px; position:relative;}
+    .brand{display:flex; align-items:center; gap:10px; margin-bottom:14px}
+    .badge{font-size:12px; padding:4px 10px; border-radius:999px; background:rgba(79,140,255,.14); color:#bcd4ff; border:1px solid rgba(79,140,255,.25)}
+    .brand h1{font-size:20px; font-weight:800; margin:0}.section{margin:14px 0; padding:12px; border-radius:14px; background:rgba(255,255,255,.02); border:1px dashed rgba(255,255,255,.08)}
+.section h3{margin:0 0 8px; font-size:14px; letter-spacing:.3px; color:#cdd8ee}
+.field{display:flex; flex-direction:column; gap:6px; margin:10px 0}
+.field label{font-size:12px; color:var(--muted)}
+.field input,.field textarea,.field select{
+  background:#0e1219; color:var(--text); border:1px solid rgba(255,255,255,.08);
+  border-radius:12px; padding:10px 12px; outline:none; font-size:14px;
+}
+.field textarea{min-height:90px; resize:vertical}
+.row{display:grid; grid-template-columns:1fr 1fr; gap:8px}
 
-    /* Form grid (compact, single column feel) */
-    .grid{display:grid; grid-template-columns: repeat(6,1fr); gap:8px}
-    .col-3{grid-column:span 3}
-    .col-2{grid-column:span 2}
-    .col-6{grid-column:span 6}
-    @media (max-width:900px){
-      .grid{grid-template-columns:1fr 1fr}
-      .col-3{grid-column:span 1}
-      .col-2{grid-column:span 1}
-      .col-6{grid-column:span 2}
-    }
-    @media (max-width:560px){
-      .grid{grid-template-columns:1fr}
-      .col-3,.col-2,.col-6{grid-column:span 1}
-    }
+.controls{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+.btn{
+  cursor:pointer; border:1px solid rgba(255,255,255,.1); background:#0f1420; color:var(--text);
+  padding:10px 14px; border-radius:12px; font-weight:700; font-size:14px;
+  transition: .2s transform, .2s opacity, .2s background, .2s border;
+}
+.btn:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.2)}
+.btn.primary{background:linear-gradient(180deg, var(--primary), #2d6cff); border:none; color:white}
+.btn.ghost{background:transparent}
 
-    label{font-size:12px; color:#cfe2ff; font-weight:800}
-    input[type="text"],input[type="email"],input[type="tel"],input[type="file"],textarea{
-      width:100%; border-radius:12px; padding:10px 12px; background:#0b1630; color:#e8efff;
-      border:1px solid rgba(255,255,255,.08); outline:none;
-    }
-    input:focus,textarea:focus{box-shadow:0 0 0 2px rgb(58 169 255 / .25) inset; border-color: rgba(58,169,255,.35)}
-    textarea{min-height:86px; resize:vertical}
+.note{font-size:12px; color:var(--muted); margin-top:6px}
 
-    .actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
-    .btn{
-      padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.14);
-      background:#0b1733; color:#e9eefb; cursor:pointer; font-weight:800;
-    }
-    .btn.brand{background:var(--brand); color:#06182b; border-color:transparent}
-    .btn.danger{background:#2b1020; border-color:#4b1733}
-    .note{font-size:12px; color:var(--muted); margin-top:6px}
+/* ===== Preview (Resume) ===== */
+.preview-wrapper{padding:16px}
+.preview-toolbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
+.preview-toolbar .title{font-size:14px; color:var(--muted)}
 
-    /* Preview A4 */
-    .preview{max-width:1000px; margin:10px auto 60px; padding:0 12px}
-    #sheet{
-      width:794px; min-height:1123px; margin:0 auto;
-      background:var(--paper); color:var(--ink);
-      border:1px solid var(--border); border-radius:14px; padding:32px;
-      box-shadow:0 10px 30px rgba(0,0,0,.12); position:relative;
-    }
+.resume{
+  width:794px; /* A4 width @96dpi approx */
+  min-height:1123px; /* A4 height */
+  margin:auto; background:white; color:#1b1f26; border-radius:16px; overflow:hidden;
+  box-shadow: 0 30px 70px rgba(0,0,0,.45);
+}
+@media (max-width: 900px){ .resume{width:100%;} }
 
-    /* CV classic layout */
-    .cv-head{display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center; border-bottom:2px solid #eef2fa; padding-bottom:12px}
-    .cv-name{font-size:28px; font-weight:900; color:#07152c}
-    .cv-role{font-size:16px; color:#234; font-weight:700}
-    .cv-contact{color:#456; font-size:12px; margin-top:6px}
+/* Two templates: classic (no sidebar) & pro (sidebar) */
+.tpl{display:none}
+.tpl.active{display:block}
 
-    .avatar{width:92px; height:92px; border-radius:12px; overflow:hidden; border:1px solid #dde6f6; display:none}
-    .avatar img{width:100%; height:100%; object-fit:cover}
+/* === Template: PRO (sidebar) === */
+.tpl-pro{display:grid; grid-template-columns:260px 1fr; min-height:100%}
+.tpl-pro .aside{background:#0f172a; color:#e8edf7; padding:22px}
+.tpl-pro .aside .photo{width:110px; height:110px; border-radius:14px; overflow:hidden; border:4px solid rgba(255,255,255,.08); margin-bottom:14px}
+.tpl-pro .aside img{width:100%; height:100%; object-fit:cover}
+.tpl-pro .aside .h{font-size:18px; font-weight:800; margin:6px 0 2px}
+.tpl-pro .aside .role{font-size:12px; color:#b9c2d6}
+.line{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent); margin:14px 0}
+.kvl{display:flex; flex-direction:column; gap:8px}
+.kvl .k{font-size:12px; color:#b8c1d6}
+.kvl .v{font-size:13px; font-weight:700}
+.chip{display:inline-flex; align-items:center; padding:6px 10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:999px; font-size:12px; margin:4px 4px 0 0}
 
-    .cv-section{margin-top:14px}
-    .cv-section h3{
-      margin:0 0 8px; font-size:14px; color:#0a2a50; letter-spacing:.3px;
-      border-left:4px solid #a6d4ff; padding-left:8px;
-    }
-    .cv-section p{margin:0 0 6px; color:#0b1325; font-size:12.5px}
-    .tags{display:flex; flex-wrap:wrap; gap:8px}
-    .tag{background:var(--chip); color:var(--chip-text); border:1px solid #cfe5ff; border-radius:999px; padding:6px 10px; font-size:12px; font-weight:800}
+.tpl-pro .main{padding:26px 28px}
+.section-h{font-weight:900; font-size:16px; letter-spacing:.3px; color:#0b1220; border-bottom:2px solid #e7eef8; padding-bottom:6px; margin:8px 0 12px}
+.item{margin:8px 0 10px}
+.item .top{display:flex; align-items:baseline; justify-content:space-between; gap:12px}
+.item .t{font-size:14px; font-weight:800}
+.item .s{font-size:12px; color:#5b6476}
+.item p{margin:6px 0; font-size:13px; line-height:1.7}
 
-    /* Overlay */
-    #overlay{position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:99999}
-    #overlay.show{display:flex}
-    .ov-card{background:#0d1730; border:1px solid rgba(255,255,255,.15); padding:16px; border-radius:14px; color:#e9eefb; min-width:260px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    .spinner{width:26px; height:26px; border-radius:50%; border:3px solid rgba(255,255,255,.15); border-top-color:var(--brand); margin:0 auto 10px; animation:spin 1s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
+/* === Template: CLASSIC (single column) === */
+.tpl-classic{padding:32px}
+.classic-header{display:flex; align-items:center; gap:14px; border-bottom:2px solid #ecf1fb; padding-bottom:10px}
+.classic-header .photo{width:90px; height:90px; border-radius:12px; overflow:hidden; border:3px solid #eef2ff}
+.classic-header .name{font-size:26px; font-weight:900}
+.classic-header .role{color:#5a6478}
 
-    /* Print */
-    @media print{
-      @page{size:A4; margin:0}
-      body{background:#fff}
-      .topbar,.panel,.actions,.preview .title{display:none !important}
-      #sheet{width:210mm; min-height:297mm; margin:0; border:0; box-shadow:none; border-radius:0}
-    }
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.box{background:#f7f9fe; border:1px solid #e6edfb; border-radius:12px; padding:12px}
+.muted{color:#616a7c; font-size:12px}
+
+/* Utility */
+.hide{display:none !important}
+
   </style>
 </head>
 <body>
-  <!-- Topbar -->
-  <div class="topbar">
-    <div>
-      <div class="brand" id="t-app">قالب السيرة الذاتية — كلاسيك</div>
-      <div class="hint" id="t-sub" style="margin-top:2px">صفحة واحدة بتخطيط عمودي بسيط</div>
+  <div class="container">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar panel" id="sidebar">
+      <div class="brand">
+        <span class="badge">CVAI — Builder</span>
+        <h1>منشئ سيرة ذاتية احترافي</h1>
+      </div><!-- الهوية -->
+  <div class="section">
+    <h3>البيانات الشخصية</h3>
+    <div class="row">
+      <div class="field">
+        <label>الاسم الكامل</label>
+        <input id="in-name" placeholder="عبدالله حكم" value="عبدالله حكم" />
+      </div>
+      <div class="field">
+        <label>المسمى الوظيفي</label>
+        <input id="in-role" placeholder="Front‑End Developer" value="Front‑End Developer" />
+      </div>
     </div>
-    <div class="langbar">
-      <button id="btn-ar" type="button" aria-pressed="true">ع</button>
-      <button id="btn-en" type="button" aria-pressed="false">EN</button>
-      <button id="btn-de" type="button" aria-pressed="false">DE</button>
+    <div class="row">
+      <div class="field">
+        <label>البريد الإلكتروني</label>
+        <input id="in-email" placeholder="email@example.com" value="abdullah@example.com" />
+      </div>
+      <div class="field">
+        <label>الهاتف</label>
+        <input id="in-phone" placeholder="+49 151 2345678" value="+49 151 2345678" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>الموقع</label>
+        <input id="in-loc" placeholder="Nürnberg, Germany" value="Nürnberg, Germany" />
+      </div>
+      <div class="field">
+        <label>رابط (موقع/LinkedIn)</label>
+        <input id="in-link" placeholder="linkedin.com/in/username" value="linkedin.com/in/abdullah" />
+      </div>
+    </div>
+    <div class="field">
+      <label>الصورة الشخصية (اختياري)</label>
+      <input id="in-photo" type="file" accept="image/*" />
+      <div class="note">يمكن تجاهلها إذا ما بدك صورة.</div>
     </div>
   </div>
 
-  <!-- Form (compact, no sidebar) -->
-  <div class="card">
-    <div class="panel">
-      <h2 id="t-form">البيانات</h2>
-      <div class="hint" id="t-form-hint">املأ الحقول بسرعة، ثم حدّث المعاينة واضغط تنزيل PDF.</div>
-
-      <div class="grid" role="form" aria-label="CV form">
-        <div class="col-3">
-          <label for="i-name" id="l-name">الاسم الكامل</label>
-          <input id="i-name" type="text" placeholder="الاسم الكامل">
-        </div>
-        <div class="col-3">
-          <label for="i-role" id="l-role">المسمى الوظيفي</label>
-          <input id="i-role" type="text" placeholder="مثال: مشرف إنتاج">
-        </div>
-
-        <div class="col-2">
-          <label for="i-city" id="l-city">المدينة/الدولة</label>
-          <input id="i-city" type="text" placeholder="برلين، ألمانيا">
-        </div>
-        <div class="col-2">
-          <label for="i-phone" id="l-phone">الهاتف</label>
-          <input id="i-phone" type="tel" placeholder="+49 0000 000000">
-        </div>
-        <div class="col-2">
-          <label for="i-email" id="l-email">البريد</label>
-          <input id="i-email" type="email" placeholder="you@example.com">
-        </div>
-
-        <div class="col-3">
-          <label for="i-web" id="l-website">الموقع/لينكدإن</label>
-          <input id="i-web" type="text" placeholder="linkedin.com/in/you">
-        </div>
-        <div class="col-3">
-          <label for="i-photo" id="l-photo">الصورة (اختياري)</label>
-          <input id="i-photo" type="file" accept="image/*">
-          <div class="hint" id="t-photo-hint" style="margin:4px 0 0">يتم تصغير الصورة تلقائيًا.</div>
-        </div>
-
-        <div class="col-6">
-          <label for="i-summary" id="l-summary">الملخص المهني</label>
-          <textarea id="i-summary"></textarea>
-        </div>
-
-        <div class="col-3">
-          <label for="i-exp" id="l-exp">الخبرات (سطر لكل خبرة)</label>
-          <textarea id="i-exp"></textarea>
-        </div>
-        <div class="col-3">
-          <label for="i-edu" id="l-edu">التعليم</label>
-          <textarea id="i-edu"></textarea>
-        </div>
-
-        <div class="col-6">
-          <label for="i-skills" id="l-skills">المهارات (مفصولة بفواصل)</label>
-          <input id="i-skills" type="text" placeholder="Welding, MIG, CNC, React">
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="btn" id="btn-update"><span id="t-update">تحديث المعاينة</span></button>
-        <button class="btn brand" id="btn-download"><span id="t-download">تنزيل PDF</span></button>
-        <button class="btn danger" id="btn-clear"><span id="t-clear">تفريغ</span></button>
-      </div>
-      <div class="note" id="t-local">* يتم الحفظ محليًا في متصفحك.</div>
+  <!-- الملخص -->
+  <div class="section">
+    <h3>الملخص المهني</h3>
+    <div class="field">
+      <textarea id="in-summary" placeholder="نبذة مختصرة عن خبراتك وإنجازاتك">مطور واجهات أمامية بخبرة 4+ سنوات في بناء تطبيقات ويب عالية الأداء، شغوف بتحسين تجربة المستخدم وجودة الكود.</textarea>
     </div>
   </div>
 
-  <!-- Preview -->
-  <div class="preview">
-    <div class="title" id="t-preview" style="margin-bottom:8px">المعاينة</div>
-    <div id="sheet" aria-label="cv-sheet">
-      <div class="cv-head">
+  <!-- الخبرات -->
+  <div class="section">
+    <h3>الخبرات (حتى 3 وظائف)</h3>
+    <div class="field">
+      <label>الوظيفة #1 — العنوان / الشركة / المدة / الوصف</label>
+      <input id="in-exp1-title" placeholder="Front‑End — CVAI" value="Front‑End Engineer — CVAI" />
+      <div class="row">
+        <input id="in-exp1-time" placeholder="2023 — 2025" value="2023 — 2025" />
+        <input id="in-exp1-loc" placeholder="Remote" value="Remote" />
+      </div>
+      <textarea id="in-exp1-desc" placeholder="المهام والإنجازات">بناء واجهة منشئ سيرة ذاتية مع معاينة حية وتصدير PDF. تحسين الأداء وإمكانية الوصول.</textarea>
+    </div>
+    <div class="field">
+      <label>الوظيفة #2</label>
+      <input id="in-exp2-title" placeholder="UI Developer — X" value="UI Developer — WebStudio" />
+      <div class="row">
+        <input id="in-exp2-time" placeholder="2021 — 2023" value="2021 — 2023" />
+        <input id="in-exp2-loc" placeholder="Berlin" value="Berlin" />
+      </div>
+      <textarea id="in-exp2-desc" placeholder="المهام والإنجازات">تطوير مكتبة مكونات داخلية وإطلاق موقع متجاوب لعملاء enterprise.</textarea>
+    </div>
+    <div class="field">
+      <label>الوظيفة #3</label>
+      <input id="in-exp3-title" placeholder="Intern — Y" value="Frontend Intern — AppHub" />
+      <div class="row">
+        <input id="in-exp3-time" placeholder="2020" value="2020" />
+        <input id="in-exp3-loc" placeholder="Hamburg" value="Hamburg" />
+      </div>
+      <textarea id="in-exp3-desc" placeholder="المهام والإنجازات">مشاركة في بناء لوحات تحكم تفاعلية وإصلاحات أخطاء.</textarea>
+    </div>
+  </div>
+
+  <!-- التعليم والمهارات -->
+  <div class="section">
+    <h3>التعليم والمهارات</h3>
+    <div class="field">
+      <label>التعليم</label>
+      <input id="in-edu1" placeholder="B.Sc. Computer Science — TU Berlin (2019)" value="B.Sc. Computer Science — TU Berlin (2019)" />
+      <input id="in-edu2" placeholder="دورة React متقدمة (2022)" value="دورة React متقدمة (2022)" />
+    </div>
+    <div class="field">
+      <label>المهارات (مفصولة بفواصل)</label>
+      <input id="in-skills" placeholder="HTML, CSS, JS, React, Tailwind, Git" value="HTML, CSS, JS, React, Tailwind, Git" />
+    </div>
+    <div class="field">
+      <label>اللغات</label>
+      <input id="in-langs" placeholder="العربية (C2), الألمانية (B2), الإنجليزية (C1)" value="العربية (C2), الألمانية (B2), الإنجليزية (C1)" />
+    </div>
+  </div>
+
+  <!-- تخصيص -->
+  <div class="section">
+    <h3>التخصيص</h3>
+    <div class="row">
+      <div class="field">
+        <label>القالب</label>
+        <select id="in-template">
+          <option value="pro" selected>Pro — شريط جانبي</option>
+          <option value="classic">Classic — عمودي بسيط</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>الاتجاه</label>
+        <select id="in-dir">
+          <option value="rtl" selected>عربي (RTL)</option>
+          <option value="ltr">English (LTR)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>الخط</label>
+        <select id="in-font">
+          <option value="Cairo" selected>Cairo (Arabic)</option>
+          <option value="Inter">Inter (Latin)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>اللون الرئيسي</label>
+        <input id="in-color" type="color" value="#4f8cff" />
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn primary" id="btn-generate">تحديث المعاينة</button>
+      <button class="btn" id="btn-pdf">تنزيل PDF</button>
+      <button class="btn ghost" id="btn-clear">تفريغ الحقول</button>
+    </div>
+    <div class="note">يتم إخفاء الحقول الفارغة تلقائيًا في المعاينة وملف الـ PDF.</div>
+  </div>
+</aside>
+
+<!-- ================= PREVIEW ================= -->
+<main class="preview-wrapper panel">
+  <div class="preview-toolbar">
+    <div class="title">معاينة السيرة الذاتية</div>
+    <div class="note">جرّب تغيير القالب أو اللون وشاهد النتيجة فورًا.</div>
+  </div>
+  <div id="resume" class="resume">
+    <!-- Template PRO -->
+    <div id="tpl-pro" class="tpl tpl-pro active">
+      <aside class="aside">
+        <div class="photo hide" id="ph-pro"><img id="img-pro" alt="photo"></div>
+        <div class="h" id="name-pro">عبدالله حكم</div>
+        <div class="role" id="role-pro">Front‑End Developer</div>
+        <div class="line"></div>
+        <div class="kvl" id="contact-pro">
+          <div><span class="k">البريد:</span><div class="v" id="email-pro">abdullah@example.com</div></div>
+          <div><span class="k">الهاتف:</span><div class="v" id="phone-pro">+49 151 2345678</div></div>
+          <div><span class="k">الموقع:</span><div class="v" id="loc-pro">Nürnberg, Germany</div></div>
+          <div><span class="k">الرابط:</span><div class="v" id="link-pro">linkedin.com/in/abdullah</div></div>
+        </div>
+        <div class="line"></div>
         <div>
-          <div class="cv-name" id="v-name">الاسم الكامل</div>
-          <div class="cv-role" id="v-role">المسمى الوظيفي</div>
-          <div class="cv-contact" id="v-contact">المدينة • الهاتف • البريد • الموقع</div>
+          <div class="k">المهارات</div>
+          <div id="skills-pro"></div>
         </div>
-        <div class="avatar" id="v-avatar"></div>
-      </div>
+        <div class="line"></div>
+        <div>
+          <div class="k">اللغات</div>
+          <div id="langs-pro" class="muted"></div>
+        </div>
+      </aside>
+      <section class="main">
+        <div class="section-h">ملخص</div>
+        <p id="summary-pro">مطور واجهات أمامية بخبرة 4+ سنوات في بناء تطبيقات ويب عالية الأداء، شغوف بتحسين تجربة المستخدم وجودة الكود.</p>
 
-      <div class="cv-section">
-        <h3 id="t-summary-h">الملخص</h3>
-        <p id="v-summary">الملخص…</p>
-      </div>
+        <div class="section-h">الخبرات</div>
+        <div id="exp-pro">
+          <!-- items injected by JS -->
+        </div>
 
-      <div class="cv-section">
-        <h3 id="t-exp-h">الخبرات</h3>
-        <div id="v-exp"></div>
-      </div>
+        <div class="section-h">التعليم</div>
+        <div id="edu-pro"></div>
+      </section>
+    </div>
 
-      <div class="cv-section">
-        <h3 id="t-edu-h">التعليم</h3>
-        <div id="v-edu"></div>
-      </div>
+    <!-- Template CLASSIC -->
+    <div id="tpl-classic" class="tpl tpl-classic">
+      <header class="classic-header">
+        <div class="photo hide" id="ph-cl"><img id="img-cl" alt="photo"></div>
+        <div>
+          <div class="name" id="name-cl">عبدالله حكم</div>
+          <div class="role" id="role-cl">Front‑End Developer</div>
+          <div class="muted" id="contact-cl">abdullah@example.com • +49 151 2345678 • Nürnberg • linkedin.com/in/abdullah</div>
+        </div>
+      </header>
 
-      <div class="cv-section">
-        <h3 id="t-skills-h">المهارات</h3>
-        <div class="tags" id="v-skills"></div>
-      </div>
+      <section style="margin-top:10px">
+        <h3 class="section-h">ملخص</h3>
+        <p id="summary-cl">مطور واجهات أمامية بخبرة 4+ سنوات في بناء تطبيقات ويب عالية الأداء.</p>
+      </section>
+
+      <section>
+        <h3 class="section-h">خبرات العمل</h3>
+        <div id="exp-cl"></div>
+      </section>
+
+      <section>
+        <h3 class="section-h">التعليم</h3>
+        <div id="edu-cl" class="grid-2"></div>
+      </section>
+
+      <section>
+        <h3 class="section-h">المهارات</h3>
+        <div id="skills-cl" class="box"></div>
+      </section>
+
+      <section>
+        <h3 class="section-h">اللغات</h3>
+        <div id="langs-cl" class="box"></div>
+      </section>
     </div>
   </div>
+</main>
 
-  <!-- Overlay -->
-  <div id="overlay" role="dialog" aria-modal="true" aria-live="polite">
-    <div class="ov-card">
-      <div class="spinner" id="ov-spin"></div>
-      <div style="font-weight:800" id="ov-title">جاري التوليد…</div>
-      <div style="font-size:13px; color:#adc0e6; margin-top:6px" id="ov-msg">يرجى الانتظار لحظة.</div>
-    </div>
-  </div>
+  </div>  <script>
+    // Helpers
+    const $ = (sel) => document.querySelector(sel);
+    const setText = (id, val) => { const el = $(id); if(!el) return; if(!val){ el.classList.add('hide'); } else { el.classList.remove('hide'); el.textContent = val; }}
+    const empty = (v) => !v || !String(v).trim();
 
-  <!-- Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-
-  <script>
-    // ===== i18n =====
-    const i18n = {
-      ar:{dir:"rtl",
-        "t-app":"قالب السيرة الذاتية — كلاسيك","t-sub":"صفحة واحدة بتخطيط عمودي بسيط",
-        "t-form":"البيانات","t-form-hint":"املأ الحقول بسرعة، ثم حدّث المعاينة واضغط تنزيل PDF.",
-        "l-name":"الاسم الكامل","l-role":"المسمى الوظيفي","l-city":"المدينة/الدولة","l-phone":"الهاتف",
-        "l-email":"البريد","l-website":"الموقع/لينكدإن","l-summary":"الملخص المهني",
-        "l-exp":"الخبرات (سطر لكل خبرة)","l-edu":"التعليم","l-skills":"المهارات (مفصولة بفواصل)","l-photo":"الصورة (اختياري)",
-        "t-photo-hint":"يتم تصغير الصورة تلقائيًا.","t-update":"تحديث المعاينة","t-download":"تنزيل PDF","t-clear":"تفريغ",
-        "t-preview":"المعاينة","t-skills-h":"المهارات","t-summary-h":"الملخص","t-exp-h":"الخبرات","t-edu-h":"التعليم",
-        "t-local":"* يتم الحفظ محليًا في متصفحك.",
-        "ph-name":"الاسم الكامل","ph-role":"مثال: مشرف إنتاج","ph-city":"برلين، ألمانيا","ph-phone":"+49 0000 000000","ph-email":"you@example.com","ph-web":"linkedin.com/in/you",
-        "ov-prep":"يتم التحضير…","ov-wait":"انتظر قليلًا من فضلك.","ov-export":"توليد PDF…","ov-done":"تمّ التحميل ✅",
-        "err-export":"حدثت مشكلة أثناء توليد PDF. جرّب ثانية أو قلل حجم الصور.","err-photo":"فشل تحميل الصورة.","err-empty":"يرجى إدخال بعض البيانات قبل التصدير.","err-email":"يرجى إدخال بريد صحيح.","err-phone":"يرجى إدخال هاتف صالح.","err-libs":"فشل تحميل المكتبات."
-      },
-      en:{dir:"ltr",
-        "t-app":"CV Template — Classic","t-sub":"One-page vertical classic layout",
-        "t-form":"Details","t-form-hint":"Fill the fields, update preview, then download the PDF.",
-        "l-name":"Full Name","l-role":"Job Title","l-city":"City/Country","l-phone":"Phone",
-        "l-email":"Email","l-website":"Website/LinkedIn","l-summary":"Professional Summary",
-        "l-exp":"Experience (one per line)","l-edu":"Education","l-skills":"Skills (comma-separated)","l-photo":"Photo (optional)",
-        "t-photo-hint":"Your photo is automatically downsized.","t-update":"Update Preview","t-download":"Download PDF","t-clear":"Clear",
-        "t-preview":"Preview","t-skills-h":"Skills","t-summary-h":"Summary","t-exp-h":"Experience","t-edu-h":"Education",
-        "t-local":"* Data is saved locally in your browser.",
-        "ph-name":"Full Name","ph-role":"e.g., Production Supervisor","ph-city":"Berlin, Germany","ph-phone":"+49 0000 000000","ph-email":"you@example.com","ph-web":"linkedin.com/in/you",
-        "ov-prep":"Preparing…","ov-wait":"Please wait a moment.","ov-export":"Generating PDF…","ov-done":"Downloaded ✅",
-        "err-export":"There was a problem generating the PDF.","err-photo":"Failed to load the image.","err-empty":"Please enter some data before export.","err-email":"Please enter a valid email.","err-phone":"Please enter a valid phone.","err-libs":"Failed to load required libraries."
-      },
-      de:{dir:"ltr",
-        "t-app":"Lebenslauf — Classic","t-sub":"Einseitiges, vertikales, klassisches Layout",
-        "t-form":"Daten","t-form-hint":"Felder ausfüllen, Vorschau aktualisieren, dann PDF herunterladen.",
-        "l-name":"Vollständiger Name","l-role":"Berufsbezeichnung","l-city":"Stadt/Land","l-phone":"Telefon",
-        "l-email":"E-Mail","l-website":"Website/LinkedIn","l-summary":"Berufliches Profil",
-        "l-exp":"Erfahrung (eine pro Zeile)","l-edu":"Ausbildung","l-skills":"Fähigkeiten (durch Komma getrennt)","l-photo":"Foto (optional)",
-        "t-photo-hint":"Ihr Foto wird automatisch verkleinert.","t-update":"Vorschau aktualisieren","t-download":"PDF herunterladen","t-clear":"Leeren",
-        "t-preview":"Vorschau","t-skills-h":"Fähigkeiten","t-summary-h":"Zusammenfassung","t-exp-h":"Erfahrung","t-edu-h":"Ausbildung",
-        "t-local":"* Daten werden lokal gespeichert.",
-        "ph-name":"Vollständiger Name","ph-role":"z. B. Produktionsleiter","ph-city":"Berlin, Deutschland","ph-phone":"+49 0000 000000","ph-email":"you@example.com","ph-web":"linkedin.com/in/you",
-        "ov-prep":"Wird vorbereitet…","ov-wait":"Bitte einen Moment warten.","ov-export":"PDF wird erstellt…","ov-done":"Heruntergeladen ✅",
-        "err-export":"Beim Erstellen des PDFs ist ein Problem aufgetreten.","err-photo":"Fehler beim Laden des Bildes.","err-empty":"Bitte geben Sie einige Daten ein.","err-email":"Bitte eine gültige E-Mail.","err-phone":"Bitte eine gültige Telefonnummer.","err-libs":"Erforderliche Bibliotheken konnten nicht geladen werden."
-      }
-    };
-
-    const $ = s => document.querySelector(s);
-
-    function setLang(lang){
-      const d = i18n[lang]||i18n.ar;
-      document.documentElement.lang = lang;
-      document.documentElement.dir = d.dir;
-
-      ["t-app","t-sub","t-form","t-form-hint","t-update","t-download","t-clear","t-preview","t-skills-h","t-summary-h","t-exp-h","t-edu-h","t-local"].forEach(k=>{
-        const el = document.getElementById(k); if(el) el.textContent = d[k];
-      });
-      ["l-name","l-role","l-city","l-phone","l-email","l-website","l-summary","l-exp","l-edu","l-skills","l-photo","t-photo-hint"].forEach(k=>{
-        const el = document.getElementById(k); if(el) el.textContent = d[k];
-      });
-      $("#i-name").placeholder = d["ph-name"];
-      $("#i-role").placeholder = d["ph-role"];
-      $("#i-city").placeholder = d["ph-city"];
-      $("#i-phone").placeholder = d["ph-phone"];
-      $("#i-email").placeholder = d["ph-email"];
-      $("#i-web").placeholder = d["ph-web"];
-
-      $("#btn-ar").setAttribute("aria-pressed", lang==="ar");
-      $("#btn-en").setAttribute("aria-pressed", lang==="en");
-      $("#btn-de").setAttribute("aria-pressed", lang==="de");
-      localStorage.setItem("cv-lang", lang);
-      render(load()||{});
+    function applyDirection(dir){
+      document.documentElement.dir = dir;
+      document.documentElement.lang = (dir === 'rtl') ? 'ar' : 'en';
     }
-    $("#btn-ar").onclick = ()=>setLang("ar");
-    $("#btn-en").onclick = ()=>setLang("en");
-    $("#btn-de").onclick = ()=>setLang("de");
 
-    // Data helpers
-    function lines(v){ return (v||"").split(/\r?\n/).map(s=>s.trim()).filter(Boolean); }
-    function tags(v){ return (v||"").split(",").map(s=>s.trim()).filter(Boolean); }
+    function applyFont(font){
+      document.body.style.fontFamily = `'${font}', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`;
+    }
 
-    function save(){
-      const data = {
-        name: $("#i-name").value || "",
-        role: $("#i-role").value || "",
-        city: $("#i-city").value || "",
-        phone: $("#i-phone").value || "",
-        email: $("#i-email").value || "",
-        web: $("#i-web").value || "",
-        summary: $("#i-summary").value || "",
-        exp: lines($("#i-exp").value),
-        edu: lines($("#i-edu").value),
-        skills: tags($("#i-skills").value),
-        photo: localStorage.getItem("cv-photo") || null,
+    function applyPrimary(color){
+      document.documentElement.style.setProperty('--primary', color);
+      // decorate section headings in resume
+      document.querySelectorAll('.section-h').forEach(h=>{ h.style.borderColor = color; });
+      // chips color tint
+      document.querySelectorAll('.chip').forEach(c=>{ c.style.borderColor = color; c.style.boxShadow = `inset 0 0 0 1px ${color}22`; });
+    }
+
+    function chipsFromCSV(csv){
+      if(empty(csv)) return [];
+      return csv.split(',').map(s=>s.trim()).filter(Boolean);
+    }
+
+    function updateResume(){
+      const name = $('#in-name').value;
+      const role = $('#in-role').value;
+      const email = $('#in-email').value;
+      const phone = $('#in-phone').value;
+      const loc = $('#in-loc').value;
+      const link = $('#in-link').value;
+      const summary = $('#in-summary').value;
+
+      const exp = [
+        { t: $('#in-exp1-title').value, time: $('#in-exp1-time').value, loc: $('#in-exp1-loc').value, d: $('#in-exp1-desc').value },
+        { t: $('#in-exp2-title').value, time: $('#in-exp2-time').value, loc: $('#in-exp2-loc').value, d: $('#in-exp2-desc').value },
+        { t: $('#in-exp3-title').value, time: $('#in-exp3-time').value, loc: $('#in-exp3-loc').value, d: $('#in-exp3-desc').value },
+      ].filter(e => !empty(e.t) || !empty(e.d));
+
+      const edu = [ $('#in-edu1').value, $('#in-edu2').value ].filter(e=>!empty(e));
+      const skills = chipsFromCSV($('#in-skills').value);
+      const langs = $('#in-langs').value;
+
+      const tpl = $('#in-template').value; // pro | classic
+
+      // Toggle templates
+      document.querySelectorAll('.tpl').forEach(t=>t.classList.remove('active'));
+      (tpl === 'pro' ? $('#tpl-pro') : $('#tpl-classic')).classList.add('active');
+
+      // === Fill PRO ===
+      setText('#name-pro', name);
+      setText('#role-pro', role);
+      setText('#email-pro', email);
+      setText('#phone-pro', phone);
+      setText('#loc-pro', loc);
+      setText('#link-pro', link);
+      setText('#summary-pro', summary);
+      const skillsPro = $('#skills-pro'); skillsPro.innerHTML = '';
+      if(skills.length){
+        skillsPro.classList.remove('hide');
+        skills.forEach(s=>{ const el=document.createElement('span'); el.className='chip'; el.textContent=s; skillsPro.appendChild(el); });
+      } else { skillsPro.classList.add('hide'); }
+      setText('#langs-pro', langs);
+
+      const expPro = $('#exp-pro'); expPro.innerHTML='';
+      exp.forEach(e=>{
+        const wrap = document.createElement('div'); wrap.className='item';
+        wrap.innerHTML = `<div class="top"><div class="t">${e.t||''}</div><div class="s">${[e.time,e.loc].filter(Boolean).join(' — ')}</div></div>` +
+                         (e.d?`<p>${e.d}</p>`:'');
+        expPro.appendChild(wrap);
+      });
+      const eduPro = $('#edu-pro'); eduPro.innerHTML='';
+      edu.forEach(x=>{ const p=document.createElement('p'); p.textContent=x; eduPro.appendChild(p); });
+
+      // Show/hide contact block if all empty
+      const contactEmpty = [email,phone,loc,link].every(empty);
+      $('#contact-pro').classList.toggle('hide', contactEmpty);
+
+      // === Fill CLASSIC ===
+      setText('#name-cl', name);
+      setText('#role-cl', role);
+      const contactCl = [email, phone, loc, link].filter(x=>!empty(x)).join(' • ');
+      setText('#contact-cl', contactCl);
+      setText('#summary-cl', summary);
+      const expCl = $('#exp-cl'); expCl.innerHTML='';
+      exp.forEach(e=>{
+        const box = document.createElement('div'); box.className='box';
+        const top = [e.t, [e.time,e.loc].filter(Boolean).join(' — ')].filter(Boolean).join(' | ');
+        box.innerHTML = `<div style="font-weight:800">${top}</div>` + (e.d?`<div class="muted" style="margin-top:6px; line-height:1.8">${e.d}</div>`:'');
+        expCl.appendChild(box);
+      });
+      const eduCl = $('#edu-cl'); eduCl.innerHTML='';
+      edu.forEach(x=>{ const b=document.createElement('div'); b.className='box'; b.textContent=x; eduCl.appendChild(b); });
+      const skillsCl = $('#skills-cl'); skillsCl.textContent = skills.join(' • ');
+      const langsCl = $('#langs-cl'); langsCl.textContent = langs;
+
+      // Direction & font & color
+      applyDirection($('#in-dir').value);
+      applyFont($('#in-font').value);
+      applyPrimary($('#in-color').value);
+
+      // Hide empty lines (generic pass)
+      document.querySelectorAll('#resume .tpl.active .hide-if-empty').forEach(el=>{
+        el.classList.toggle('hide', empty(el.textContent));
+      });
+    }
+
+    // Photo handling (optional)
+    function handlePhoto(input, targets){
+      const file = input.files && input.files[0];
+      if(!file){ targets.forEach(t=>t.wrap.classList.add('hide')); return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        targets.forEach(t=>{ t.img.src = e.target.result; t.wrap.classList.remove('hide'); });
       };
-      localStorage.setItem("cv-classic", JSON.stringify(data));
-      return data;
-    }
-    function load(){
-      try{ return JSON.parse(localStorage.getItem("cv-classic")) || null; }catch{ return null; }
+      reader.readAsDataURL(file);
     }
 
-    function render(data){
-      const dict = i18n[document.documentElement.lang]||i18n.ar;
-      $("#v-name").textContent = data.name || dict["ph-name"] || "Full Name";
-      $("#v-role").textContent = data.role || dict["ph-role"] || "Job Title";
-
-      const parts = [];
-      if (data.city) parts.push(data.city);
-      if (data.phone) parts.push(data.phone);
-      if (data.email) parts.push(data.email);
-      if (data.web) parts.push(data.web);
-      $("#v-contact").textContent = parts.join(" • ");
-
-      $("#v-summary").textContent = data.summary || (dict["t-summary-h"] + "…");
-
-      const skills = $("#v-skills"); skills.innerHTML = "";
-      (data.skills||[]).forEach(s=>{
-        const t = document.createElement("span");
-        t.className = "tag"; t.textContent = s;
-        skills.appendChild(t);
-      });
-
-      const expV = $("#v-exp"); expV.innerHTML = "";
-      (data.exp||[]).forEach(l=>{
-        const p = document.createElement("p"); p.style.margin="0 0 6px"; p.textContent = l; expV.appendChild(p);
-      });
-
-      const eduV = $("#v-edu"); eduV.innerHTML = "";
-      (data.edu||[]).forEach(l=>{
-        const p = document.createElement("p"); p.style.margin="0 0 6px"; p.textContent = l; eduV.appendChild(p);
-      });
-
-      const av = $("#v-avatar");
-      if (data.photo){
-        av.style.display = "block";
-        av.innerHTML = `<img src="${data.photo}" alt="photo">`;
-      } else {
-        av.style.display = "none";
-        av.innerHTML = "";
-      }
+    // Export to PDF (A4, high quality)
+    function exportPDF(){
+      const node = document.getElementById('resume');
+      const opt = {
+        margin:       [10,10,10,10],
+        filename:     `CV_${document.getElementById('in-name').value || 'document'}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      // Temporarily force white background
+      const prevBg = node.style.backgroundColor;
+      node.style.backgroundColor = '#ffffff';
+      html2pdf().set(opt).from(node).save().then(()=>{ node.style.backgroundColor = prevBg; });
     }
 
-    // Debounce
-    function debounce(fn,wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), wait); }; }
-    const debouncedRender = debounce(()=>render(save()), 220);
-    ["i-name","i-role","i-city","i-phone","i-email","i-web","i-summary","i-exp","i-edu","i-skills"].forEach(id=>{
-      document.getElementById(id).addEventListener("input", debouncedRender);
+    // Clear inputs
+    function clearAll(){
+      document.querySelectorAll('.sidebar input:not([type="color"]):not([type="file"])').forEach(i=> i.value='');
+      document.querySelectorAll('.sidebar textarea').forEach(t=> t.value='');
+      updateResume();
+    }
+
+    // Events
+    window.addEventListener('DOMContentLoaded', () => {
+      $('#btn-generate').addEventListener('click', updateResume);
+      $('#btn-pdf').addEventListener('click', exportPDF);
+      $('#btn-clear').addEventListener('click', clearAll);
+      // Live update on change
+      document.querySelectorAll('.sidebar input, .sidebar textarea, .sidebar select').forEach(el=>{
+        el.addEventListener('input', ()=>{ if(el.id !== 'in-photo') updateResume(); });
+        el.addEventListener('change', ()=>{ if(el.id !== 'in-photo') updateResume(); });
+      });
+      // Photo
+      $('#in-photo').addEventListener('change', (e)=>{
+        handlePhoto(e.target, [
+          {wrap: $('#ph-pro'), img: $('#img-pro')},
+          {wrap: $('#ph-cl'), img: $('#img-cl')}
+        ]);
+      });
+
+      // Initial render
+      updateResume();
     });
-
-    document.getElementById("btn-update").onclick = ()=>render(save());
-    document.getElementById("btn-clear").onclick = ()=>{
-      ["i-name","i-role","i-city","i-phone","i-email","i-web","i-summary","i-exp","i-edu","i-skills"].forEach(id=>$("#"+id).value="");
-      localStorage.removeItem("cv-classic");
-      localStorage.removeItem("cv-photo");
-      render(save());
-    };
-
-    // Photo (downsize)
-    document.getElementById("i-photo").addEventListener("change", async (e)=>{
-      const f = e.target.files && e.target.files[0];
-      if(!f) return;
-      const dict = i18n[document.documentElement.lang]||i18n.ar;
-      try{
-        const dataUrl = await new Promise((resolve,reject)=>{
-          const reader = new FileReader();
-          reader.onload = ()=>{
-            const img = new Image();
-            img.onload = ()=>{
-              const maxSide = 1200;
-              const ratio = Math.min(1, maxSide/Math.max(img.width,img.height));
-              const w = Math.round(img.width*ratio), h = Math.round(img.height*ratio);
-              const c = document.createElement("canvas"); c.width=w; c.height=h;
-              const ctx = c.getContext("2d"); ctx.drawImage(img,0,0,w,h);
-              const dataUrl = c.toDataURL("image/jpeg", 0.9);
-              const sizeMB = (dataUrl.length*3/4)/(1024*1024);
-              if(sizeMB>4) reject(new Error("Image too large")); else resolve(dataUrl);
-            };
-            img.onerror = ()=>reject(new Error("Failed to load image"));
-            img.src = reader.result;
-          };
-          reader.onerror = ()=>reject(new Error("Failed to read file"));
-          reader.readAsDataURL(f);
-        });
-        localStorage.setItem("cv-photo", dataUrl);
-        render(save());
-      }catch(err){ alert(dict["err-photo"] || "Failed to load image."); }
-    });
-
-    // Overlay
-    const overlay = document.getElementById("overlay"),
-          ovTitle = document.getElementById("ov-title"),
-          ovMsg = document.getElementById("ov-msg");
-    function showOverlay(title,msg,spin=true){
-      overlay.classList.add("show");
-      const t = document.getElementById("ov-title"); if(t) t.textContent = title;
-      const m = document.getElementById("ov-msg"); if(m) m.textContent = msg;
-      const sp = document.getElementById("ov-spin"); if(sp) sp.style.display = spin?"block":"none";
-    }
-    function hideOverlay(){ overlay.classList.remove("show"); }
-
-    function validateEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-    function validatePhone(p){ return /^\+?[\d\s\-()]{7,}$/.test(p); }
-
-    // PDF export
-    document.getElementById("btn-download").onclick = async ()=>{
-      const dict = i18n[document.documentElement.lang]||i18n.ar;
-      const data = save();
-      if (!data.name && !data.role && !data.summary && !data.exp.length && !data.edu.length && !data.skills.length) {
-        alert(dict["err-empty"] || "Please enter some data before export."); return;
-      }
-      if (data.email && !validateEmail(data.email)) { alert(dict["err-email"]); return; }
-      if (data.phone && !validatePhone(data.phone)) { alert(dict["err-phone"]); return; }
-      if (!window.html2canvas || !window.jspdf) { alert(dict["err-libs"]); return; }
-
-      showOverlay(dict["ov-export"]||"Generating PDF…", dict["ov-wait"]||"Please wait…", true);
-      let wrapper;
-      try{
-        render(save());
-        if (document.fonts && document.fonts.ready) { try{ await document.fonts.ready; }catch{} }
-
-        const sheet = document.getElementById("sheet");
-        const clone = sheet.cloneNode(true);
-        clone.setAttribute("dir", document.documentElement.dir);
-        clone.style.boxShadow="none"; clone.style.border="0"; clone.style.borderRadius="0";
-
-        wrapper = document.createElement("div");
-        Object.assign(wrapper.style,{
-          position:"fixed", left:"-10000px", top:"0", background:"#ffffff",
-          padding:"0", margin:"0", width: sheet.offsetWidth+"px", zIndex:9999
-        });
-        wrapper.appendChild(clone);
-        document.body.appendChild(wrapper);
-        void wrapper.offsetHeight;
-
-        const imgs = Array.from(wrapper.querySelectorAll("img"));
-        if (imgs.length){
-          await Promise.all(imgs.map(img=>{
-            if (img.complete && img.naturalWidth) return;
-            return new Promise(res=>{ img.onload=res; img.onerror=res; });
-          }));
-        }
-
-        const scale = Math.min(2, Math.max(1.5, (window.devicePixelRatio||1)));
-        const canvas = await html2canvas(clone,{
-          scale, useCORS:true, allowTaint:true, backgroundColor:"#ffffff", logging:false, removeContainer:true, imageTimeout:15000
-        });
-        if (!canvas || !canvas.width || !canvas.height) throw new Error("Empty canvas");
-
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ unit:"pt", format:"a4", orientation:"portrait" });
-        const pageW = pdf.internal.pageSize.getWidth();
-        const pageH = pdf.internal.pageSize.getHeight();
-
-        const fitsOne = (canvas.height/canvas.width) <= (pageH/pageW) + 1e-4;
-        if (fitsOne){
-          const s = Math.min(pageW/canvas.width, pageH/canvas.height);
-          const imgW = Math.floor(canvas.width*s), imgH = Math.floor(canvas.height*s);
-          const x = Math.floor((pageW - imgW)/2), y = Math.floor((pageH - imgH)/2);
-          const imgData = canvas.toDataURL("image/jpeg", 0.95);
-          pdf.addImage(imgData,"JPEG",x,y,imgW,imgH);
-        } else {
-          const sliceH = Math.max(1, Math.round(canvas.width * (pageH/pageW)));
-          const overlap = Math.max(2, Math.round(sliceH * 0.01));
-          const slice = document.createElement("canvas");
-          const sctx = slice.getContext("2d", { willReadFrequently:true });
-          slice.width = canvas.width;
-
-          let y = 0, pageIndex = 0;
-          while (y < canvas.height - 2){
-            const remaining = canvas.height - y;
-            let h = Math.min(sliceH, remaining);
-            if (h <= 2) break;
-            slice.height = h;
-            sctx.clearRect(0,0,slice.width,slice.height);
-            sctx.drawImage(canvas, 0, Math.floor(y), canvas.width, h, 0, 0, slice.width, h);
-
-            const imgData = slice.toDataURL("image/jpeg", 0.95);
-            if (pageIndex > 0) pdf.addPage();
-            pdf.addImage(imgData,"JPEG",0,0,pageW,pageH);
-
-            if (remaining <= h + 2) break;
-            y += h - overlap; pageIndex++;
-          }
-        }
-
-        const raw = (document.getElementById("i-name")?.value || "CV").trim();
-        const fname = (raw || "CV").replace(/[\\/:*?"<>|]+/g,"_").replace(/\s+/g,"_") + ".pdf";
-        try{
-          const blob = pdf.output("blob");
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a"); a.href=url; a.download=fname; a.style.display="none";
-          document.body.appendChild(a); a.click();
-          setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1200);
-        }catch{
-          const dataUrl = pdf.output("datauristring");
-          const a = document.createElement("a"); a.href=dataUrl; a.download=fname; a.style.display="none";
-          document.body.appendChild(a); a.click(); a.remove();
-        }
-
-        const sp = document.getElementById("ov-spin"); if(sp) sp.style.display="none";
-        const tt = document.getElementById("ov-title"); if(tt) tt.textContent = (i18n[document.documentElement.lang]||i18n.ar)["ov-done"]||"Done";
-        const mm = document.getElementById("ov-msg"); if(mm) mm.textContent = "";
-        setTimeout(hideOverlay, 700);
-      }catch(err){
-        console.error(err);
-        alert((i18n[document.documentElement.lang]||i18n.ar)["err-export"] || "Export error");
-      }finally{
-        if (wrapper) wrapper.remove();
-        hideOverlay();
-      }
-    };
-
-    // Init
-    (function init(){
-      const lang = localStorage.getItem("cv-lang") || "ar";
-      setLang(lang);
-      const data = load();
-      if (data){
-        ["i-name","i-role","i-city","i-phone","i-email","i-web"].forEach(id=>$("#"+id).value = data[id.split('-')[1]] || "");
-        $("#i-summary").value = data.summary || "";
-        $("#i-exp").value = (data.exp||[]).join("\n");
-        $("#i-edu").value = (data.edu||[]).join("\n");
-        $("#i-skills").value = (data.skills||[]).join(", ");
-        if (data.photo) localStorage.setItem("cv-photo", data.photo);
-        render(data);
-      } else {
-        render(save());
-      }
-    })();
-  </script>
-</body>
+  </script></body>
 </html>
